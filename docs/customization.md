@@ -19,14 +19,14 @@ Let's take a simple example.
 
 ```json
 {
-    "actor": "%user",
-    "verb": {
-        "id": "http://id.tincanapi.com/verb/viewed"
-    },
-    "object": {
-        "objectType": "Activity",
-        "id": "%course:iri"
-    }
+    "actor": "%user",
+    "verb": {
+        "id": "http://id.tincanapi.com/verb/viewed"
+    },
+    "object": {
+        "objectType": "Activity",
+        "id": "%course:iri"
+    }
 }
 ```
 
@@ -55,11 +55,11 @@ The last placeholder is a bit special because it does not call a predefined func
 
 ```json
 {
-    "actor": "%user",
-    "verb": {
-        "id": "%modeler:verb"
-    },
-	...
+    "actor": "%user",
+    "verb": {
+        "id": "%modeler:verb"
+    },
+    ...
 ```
 
 Here, the template calls the **%modeler:verb** placeholder, which refers to a **verb()** function which must be implemented by the modeler. We will see how to do this in the next chapter.
@@ -92,8 +92,8 @@ use block_trax_xapi_agent\modelers\base as modeler;
 class course_viewed extends modeler {
 
 	protected function template() {
-        return 'core/course_viewed';
-    }
+        return 'core/course_viewed';
+    }
 }
 ```
 
@@ -107,10 +107,10 @@ To illustrate this, let's say we want to change the verb of the xAPI statement. 
 
 ```json
 {
-    "actor": "%user",
-    "verb": {
-        "id": "%modeler:verb"
-    },
+    "actor": "%user",
+    "verb": {
+        "id": "%modeler:verb"
+    },
 	...
 ```
 
