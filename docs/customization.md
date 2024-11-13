@@ -111,7 +111,7 @@ To illustrate this, let's say we want to change the verb of the xAPI statement. 
     "verb": {
         "id": "%modeler:verb"
     },
-	...
+    ...
 ```
 
 Then, we define a custom modeler in **/local/trax_xapi_custom/classes/modelers/core/event/course_viewed.json**, which inherits from the native modeler, and implements a specific function to define the statement verb:
