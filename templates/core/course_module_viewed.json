@@ -1,0 +1,51 @@
+{
+    "actor": "%user",
+    "verb": {
+        "id": "http://id.tincanapi.com/verb/viewed"
+    },
+    "object": {
+        "objectType": "Activity",
+        "id": "%context:iri",
+        "definition": {
+            "type": "https://w3id.org/xapi/tla/activity-types/activity",
+            "name": "%context:name",
+            "extensions": {
+                "https://w3id.org/xapi/vle/extensions/component": "%context:component",
+                "https://w3id.org/xapi/vle/extensions/url": "%context:url",
+                "https://w3id.org/xapi/vle/extensions/shared-id": "%context:idnumber"
+            }
+        }
+    },
+    "context": {
+        "contextActivities": {
+            "parent": [{
+                "id": "%course:iri",
+                "definition": {
+                    "type": "https://w3id.org/xapi/tla/activity-types/content_set",
+                    "extensions": {
+                        "https://w3id.org/xapi/vle/extensions/component": "course",
+                        "https://w3id.org/xapi/vle/extensions/shared-id": "%course:idnumber"
+                    }
+                }
+            }],
+            "grouping": [
+                {
+                    "id": "%system:iri",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/vle/activity-types/system"
+                    }
+                }
+            ],
+            "category": [
+                {
+                    "id": "https://w3id.org/xapi/vle",
+                    "definition": {
+                        "type": "http://adlnet.gov/expapi/activities/profile"
+                    }
+                }
+            ]
+        },
+        "platform": "Moodle"
+    },
+    "timestamp": "%timestamp"
+}

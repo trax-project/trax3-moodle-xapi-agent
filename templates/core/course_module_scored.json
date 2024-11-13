@@ -1,0 +1,56 @@
+{
+    "actor": "%relateduser",
+    "verb": {
+        "id": "%modeler:verb"
+    },
+    "object": {
+        "objectType": "Activity",
+        "id": "%modeler:grade_iri",
+        "definition": {
+            "type": "https://w3id.org/xapi/tla/activity-types/assessment",
+            "name": "%modeler:grade_name",
+            "extensions": {
+                "https://w3id.org/xapi/vle/extensions/component": "%modeler:grade_component",
+                "https://w3id.org/xapi/vle/extensions/url": "%modeler:grade_url",
+                "https://w3id.org/xapi/vle/extensions/shared-id": "%modeler:grade_idnumber"
+            }
+        }
+    },
+    "result": {
+        "success": "%modeler:success",
+        "score": "%modeler:score"
+    },
+    "context": {
+        "contextActivities": {
+            "parent": [{
+                "id": "%course:iri",
+                "definition": {
+                    "type": "https://w3id.org/xapi/tla/activity-types/content_set",
+                    "extensions": {
+                        "https://w3id.org/xapi/vle/extensions/component": "course",
+                        "https://w3id.org/xapi/vle/extensions/shared-id": "%course:idnumber"
+                    }
+                }
+            }],
+            "grouping": [
+                {
+                    "id": "%system:iri",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/vle/activity-types/system"
+                    }
+                }
+            ],
+            "category": [
+                {
+                    "id": "https://w3id.org/xapi/vle",
+                    "definition": {
+                        "type": "http://adlnet.gov/expapi/activities/profile"
+                    }
+                }
+            ]
+        },
+        "instructor": "%modeler:instructor",
+        "platform": "Moodle"
+    },
+    "timestamp": "%timestamp"
+}
