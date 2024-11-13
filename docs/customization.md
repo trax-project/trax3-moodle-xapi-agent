@@ -132,3 +132,6 @@ class course_viewed extends modeler {
 	}
 }
 ```
+
+
+> You can download an example of local plugin to customize your statements here: https://github.com/trax-project/trax3-moodle-xapi-custom
