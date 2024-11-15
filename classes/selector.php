@@ -38,15 +38,13 @@ class selector {
         if (str_contains($event->eventname, 'course_module_viewed')) {
             return config::track_moodle_event('navigation');
         }
-        if ($event->eventname == '\core\event\course_viewed') {
-            return config::track_moodle_event('navigation');
+
+        foreach (config::supported_events(true) as $domain => $events) {
+            if (in_array($event->eventname, $events)) {
+                return config::track_moodle_event($domain);
+            }
         }
-        if ($event->eventname == '\core\event\course_module_completion_updated') {
-            return config::track_moodle_event('completion');
-        }
-        if ($event->eventname == '\core\event\user_graded') {
-            return config::track_moodle_event('grading');
-        }
+
         return false;
     }
 }

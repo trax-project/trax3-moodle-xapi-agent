@@ -113,17 +113,16 @@ If you want to transform Moodle events into xAPI statements, you should select t
 
 - **Grading:** a statement is generated every time a user validates a grade on a course module. By default, the `scored`, `passed` and `failed` verbs are used. When a teacher manually removes a grade, a statement with the `voided-grade` verb is generated. 
 
+- **H5P:** all the H5P statements are captured and improved. Check-out the [H5P](./h5p.md) documentation page. 
+
 If you want to get more details about the generated statements, you should refer to the [xAPI profile](./xapi-profile.md) associated with this plugin.
 
 If you don't want to apply this profile and prefer defining your own statements, read the next paragraph.
 
 #### xAPI modeling
 
-By default, this plugin conforms with an [xAPI profile](./xapi-profile.md) which defines all the generated statements. However, you are free to define your own statements. In order to do this, you need to implement both *templates* and *modelers*.
-
-A *template* is a JSON file which defines the structure of an xAPI statement. You can define your own templates and store them on a local folder of your Moodle installation, which must be specified in the **Custom templates folder** field.
-
-A *modeler* is a piece of PHP class which defines how the plugin will extract data from a Moodle event and inject this data inside templates in order to create statements. You can define your own modelers in a local plugin located on your Moodle installation. In this case, you must define the **Custom modelers namespace** field, which is the PHP namespace of your plugin modelers.
+By default, this plugin conforms with an [xAPI profile](./xapi-profile.md) which defines all the generated statements. However, you are free to define your own statements. In order to do this, you need to implement *templates* and *modelers* in a local plugin, following the [customization guidelines](./customization.md).
+By default, this local plugin is named **trax_xapi_custom**, but you are free to change it in the **Customization plugin**.
 
 ## Course block
 

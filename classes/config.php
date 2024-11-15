@@ -325,20 +325,13 @@ class config {
      */
     public static function custom_templates_folder() {
         global $CFG;
+        $plugin = trim(get_config('block_trax_xapi_agent', 'custom_plugin'));
 
-        // Remove leading and trailing slashes and back-slashes.
-        $res = trim(
-            get_config('block_trax_xapi_agent', 'custom_templates_folder'),
-            "\\/ \n\r\t\v\x00"
-        );
-        // Return false if empty.
-        if (empty($res)) {
+        if (empty($plugin)) {
             return false;
         }
-        // Replace back-slashed by slashes.
-        $res = str_replace('\\', '/', $res);
-        // Add the absolute root and a trailing slash.
-        return $CFG->dirroot . "/$res/";
+
+        return $CFG->dirroot . '/local/' . $plugin . '/templates/';
     }
 
     /**
@@ -347,19 +340,79 @@ class config {
      * @return string|false
      */
     public static function custom_modelers_namespace() {
-        // Remove leading and trailing slashes and back-slashes.
-        $res = trim(
-            get_config('block_trax_xapi_agent', 'custom_modelers_namespace'),
-            "\\/ \n\r\t\v\x00"
-        );
-        // Return false if empty.
-        if (empty($res)) {
+        $plugin = trim(get_config('block_trax_xapi_agent', 'custom_plugin'));
+
+        if (empty($plugin)) {
             return false;
         }
-        // Replace slashed by back-slashes.
-        $res = str_replace('/', '\\', $res);
-        // Add a leading back-slashes.
-        return "\\$res";
+
+        return '\\local_' . $plugin . '\\modelers';
+    }
+
+    /**
+     * Get the supported events.
+     *
+     * @param boolean $withCustom
+     * @return array
+     */
+    public static function supported_events($withCustom = false) {
+        $res = [
+            'navigation' => ['\core\event\course_viewed'],
+            'completion' => ['\core\event\course_module_completion_updated'],
+            'grading' => ['\core\event\user_graded'],
+            'h5p' => ['\mod_h5pactivity\event\statement_received'],
+        ];
+        if ($withCustom) {
+            foreach (self::supported_custom_events() as $domain => $events) {
+                if (!isset($res[$domain])) {
+                    $res[$domain] = $events;
+                } else {
+                    $res[$domain] = array_unique(array_merge($res, $events));
+                }
+            }
+        }
+        return $res;
+    }
+
+    /**
+     * Get the supported events.
+     *
+     * @return array
+     */
+    public static function supported_custom_events() {
+        $plugin = trim(get_config('block_trax_xapi_agent', 'custom_plugin'));
+        if (empty($plugin)) {
+            return [];
+        }
+        $configClass = '\\local_' . $plugin . '\\config';
+        if (!class_exists($configClass)) {
+            return [];
+        }
+        $config = new $configClass;
+        if (!method_exists($config, 'supported_events')) {
+            return [];
+        }
+        return $config->supported_events();
+    }
+
+    /**
+     * Get the supported events.
+     *
+     * @return array
+     */
+    public static function supported_domains() {
+        $res = [
+            'block_trax_xapi_agent' => array_keys(self::supported_events()),
+        ];
+
+        // Custom events.
+        $plugin = trim(get_config('block_trax_xapi_agent', 'custom_plugin'));
+        $domains = array_keys(self::supported_custom_events());
+        if (empty($domains)) {
+            return $res;
+        }
+        $res['local_' . $plugin] = $domains;
+        return $res;
     }
 
     /**

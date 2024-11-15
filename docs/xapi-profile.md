@@ -1,4 +1,4 @@
-# xAPI profiles
+# VLE xAPI profile
 
 The xAPI profile used by this plugin is under development on the ADL xAPI profile server at https://w3id.org/xapi/vle. Currently, the profile defines 3 families of statements for which we give some examples below.
 

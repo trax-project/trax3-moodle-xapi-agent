@@ -178,7 +178,9 @@ abstract class base {
      *
      * @return string|false
      */
-    protected abstract function template();
+    protected function template() {
+        return false;
+    }
 
     /**
      * Parse the template and fill the placeholders.

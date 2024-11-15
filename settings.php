@@ -39,8 +39,8 @@ if ($ADMIN->fulltree) {
     // Endpoint.
     $settings->add(new admin_setting_configtext(
         'block_trax_xapi_agent/lrs_endpoint',
-        new lang_string('lrs_endpoint_prod', 'block_trax_xapi_agent'),
-        new lang_string('lrs_endpoint_help', 'block_trax_xapi_agent'),
+        get_string('lrs_endpoint_prod', 'block_trax_xapi_agent'),
+        get_string('lrs_endpoint_help', 'block_trax_xapi_agent'),
         'http://my.lrs/endpoint',
         PARAM_URL
     ));
@@ -48,8 +48,8 @@ if ($ADMIN->fulltree) {
     // Username.
     $settings->add(new admin_setting_configtext(
         'block_trax_xapi_agent/lrs_username',
-        new lang_string('lrs_username_prod', 'block_trax_xapi_agent'),
-        new lang_string('lrs_username_help', 'block_trax_xapi_agent'),
+        get_string('lrs_username_prod', 'block_trax_xapi_agent'),
+        get_string('lrs_username_help', 'block_trax_xapi_agent'),
         '',
         PARAM_TEXT
     ));
@@ -57,8 +57,8 @@ if ($ADMIN->fulltree) {
     // Password.
     $settings->add(new admin_setting_configpasswordunmask(
         'block_trax_xapi_agent/lrs_password',
-        new lang_string('lrs_password_prod', 'block_trax_xapi_agent'),
-        new lang_string('lrs_password_help', 'block_trax_xapi_agent'),
+        get_string('lrs_password_prod', 'block_trax_xapi_agent'),
+        get_string('lrs_password_help', 'block_trax_xapi_agent'),
         '',
         PARAM_TEXT
     ));
@@ -74,8 +74,8 @@ if ($ADMIN->fulltree) {
     // Endpoint.
     $settings->add(new admin_setting_configtext(
         'block_trax_xapi_agent/lrs2_endpoint',
-        new lang_string('lrs_endpoint_test', 'block_trax_xapi_agent'),
-        new lang_string('lrs_endpoint_help', 'block_trax_xapi_agent'),
+        get_string('lrs_endpoint_test', 'block_trax_xapi_agent'),
+        get_string('lrs_endpoint_help', 'block_trax_xapi_agent'),
         '',
         PARAM_URL
     ));
@@ -83,8 +83,8 @@ if ($ADMIN->fulltree) {
     // Username.
     $settings->add(new admin_setting_configtext(
         'block_trax_xapi_agent/lrs2_username',
-        new lang_string('lrs_username_test', 'block_trax_xapi_agent'),
-        new lang_string('lrs_username_help', 'block_trax_xapi_agent'),
+        get_string('lrs_username_test', 'block_trax_xapi_agent'),
+        get_string('lrs_username_help', 'block_trax_xapi_agent'),
         '',
         PARAM_TEXT
     ));
@@ -92,8 +92,8 @@ if ($ADMIN->fulltree) {
     // Password.
     $settings->add(new admin_setting_configpasswordunmask(
         'block_trax_xapi_agent/lrs2_password',
-        new lang_string('lrs_password_test', 'block_trax_xapi_agent'),
-        new lang_string('lrs_password_help', 'block_trax_xapi_agent'),
+        get_string('lrs_password_test', 'block_trax_xapi_agent'),
+        get_string('lrs_password_help', 'block_trax_xapi_agent'),
         '',
         PARAM_TEXT
     ));
@@ -118,8 +118,8 @@ if ($ADMIN->fulltree) {
     // Actors identification custom field
     $settings->add(new admin_setting_configtext(
         'block_trax_xapi_agent/actors_id_custom_field',
-        new lang_string('actors_id_custom_field', 'block_trax_xapi_agent'),
-        new lang_string('actors_id_custom_field_help', 'block_trax_xapi_agent'),
+        get_string('actors_id_custom_field', 'block_trax_xapi_agent'),
+        get_string('actors_id_custom_field_help', 'block_trax_xapi_agent'),
         '',
         PARAM_TEXT
     ));
@@ -127,8 +127,8 @@ if ($ADMIN->fulltree) {
     // Actors identification homepage.
     $settings->add(new admin_setting_configtext(
         'block_trax_xapi_agent/actors_id_homepage',
-        new lang_string('actors_id_homepage', 'block_trax_xapi_agent'),
-        new lang_string('actors_id_homepage_help', 'block_trax_xapi_agent'),
+        get_string('actors_id_homepage', 'block_trax_xapi_agent'),
+        get_string('actors_id_homepage_help', 'block_trax_xapi_agent'),
         'http://my.moodle',
         PARAM_URL
     ));
@@ -136,8 +136,8 @@ if ($ADMIN->fulltree) {
     // Include actors name.
     $settings->add(new admin_setting_configcheckbox(
         'block_trax_xapi_agent/actors_id_include_name',
-        new lang_string('actors_id_include_name', 'block_trax_xapi_agent'),
-        new lang_string('actors_id_include_name_help', 'block_trax_xapi_agent'),
+        get_string('actors_id_include_name', 'block_trax_xapi_agent'),
+        get_string('actors_id_include_name_help', 'block_trax_xapi_agent'),
         1
     ));
   
@@ -152,8 +152,8 @@ if ($ADMIN->fulltree) {
     // Activities IRI base.
     $settings->add(new admin_setting_configtext(
         'block_trax_xapi_agent/activities_id_base',
-        new lang_string('activities_id_base', 'block_trax_xapi_agent'),
-        new lang_string('activities_id_base_help', 'block_trax_xapi_agent'),
+        get_string('activities_id_base', 'block_trax_xapi_agent'),
+        get_string('activities_id_base_help', 'block_trax_xapi_agent'),
         'http://my.moodle',
         PARAM_URL
     ));
@@ -166,29 +166,16 @@ if ($ADMIN->fulltree) {
         get_string('moodle_events_help', 'block_trax_xapi_agent')
     ));
 
-    // Log modeling errors for events outside courses.
-    $settings->add(new admin_setting_configcheckbox(
-        'block_trax_xapi_agent/moodle_events_navigation',
-        new lang_string('moodle_events_navigation', 'block_trax_xapi_agent'),
-        new lang_string('moodle_events_navigation_help', 'block_trax_xapi_agent'),
-        0
-    ));
-
-    // Log modeling errors for events outside courses.
-    $settings->add(new admin_setting_configcheckbox(
-        'block_trax_xapi_agent/moodle_events_completion',
-        new lang_string('moodle_events_completion', 'block_trax_xapi_agent'),
-        new lang_string('moodle_events_completion_help', 'block_trax_xapi_agent'),
-        0
-    ));
-
-    // Log modeling errors for events outside courses.
-    $settings->add(new admin_setting_configcheckbox(
-        'block_trax_xapi_agent/moodle_events_grading',
-        new lang_string('moodle_events_grading', 'block_trax_xapi_agent'),
-        new lang_string('moodle_events_grading_help', 'block_trax_xapi_agent'),
-        0
-    ));
+    foreach (config::supported_domains() as $plugin => $domains) {
+        foreach ($domains as $domain) {
+            $settings->add(new admin_setting_configcheckbox(
+                "block_trax_xapi_agent/moodle_events_$domain",
+                get_string("moodle_events_$domain", $plugin),
+                get_string("moodle_events_$domain" . '_help', $plugin),
+                0
+            ));
+        }
+    }
     
     // -------------------- xAPI modeling --------------------.
 
@@ -198,31 +185,12 @@ if ($ADMIN->fulltree) {
         get_string('xapi_modeling_help', 'block_trax_xapi_agent')
     ));
 
-    // Activities IRI base.
+    // Customization plugin.
     $settings->add(new admin_setting_configtext(
-        'block_trax_xapi_agent/custom_templates_folder',
-        new lang_string('custom_templates_folder', 'block_trax_xapi_agent'),
-        new lang_string('custom_templates_folder_help', 'block_trax_xapi_agent'),
-        'local/trax_xapi_custom/templates',
+        'block_trax_xapi_agent/custom_plugin',
+        get_string('custom_plugin', 'block_trax_xapi_agent'),
+        get_string('custom_plugin_help', 'block_trax_xapi_agent'),
+        'trax_xapi_custom',
         PARAM_TEXT
     ));
-
-    // Activities IRI base.
-    $settings->add(new admin_setting_configtext(
-        'block_trax_xapi_agent/custom_modelers_namespace',
-        new lang_string('custom_modelers_namespace', 'block_trax_xapi_agent'),
-        new lang_string('custom_modelers_namespace_help', 'block_trax_xapi_agent'),
-        'local_trax_xapi_custom\modelers',
-        PARAM_TEXT
-    ));
-
-    // -------------------- Errors management --------------------.
-
-    /*
-    $settings->add(new admin_setting_heading(
-        'errors_management',
-        get_string('errors_management', 'block_trax_xapi_agent'),
-        get_string('errors_management_help', 'block_trax_xapi_agent')
-    ));
-    */
 }

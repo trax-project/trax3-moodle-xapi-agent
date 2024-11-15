@@ -1,4 +1,4 @@
-# Customization
+# Customization guidelines
 
 By default, this plugin conforms with an [xAPI profile](./xapi-profile.md) which defines all the generated statements. However, you are free to define your own statements. In order to do this, you may implement custom **templates** and **modelers**.
 
@@ -66,7 +66,7 @@ Here, the template calls the **%modeler:verb** placeholder, which refers to a **
 
 Now that you understand the structure of a template, let's say you want to create your own template. For instance, let's say you want to customize the **course_viewed.json** template provided by the TRAX xAPI Agent plugin.
 
-First, you need to create a local plugin named **trax_xapi_custom** which is located in the **/local/trax_xapi_custom** folder. In this plugin, create your own **course_viewed.json** template in the **/local/trax_xapi_custom/templates** folder.
+First, you need to create a local plugin named **trax_xapi_custom** which is located in the **/local/trax_xapi_custom** folder. In this plugin, create your own **course_viewed.json** template in the **templates** folder.
 
 That's it! Your template replaces the default one.
 
@@ -133,5 +133,50 @@ class course_viewed extends modeler {
 }
 ```
 
-
 > You can download an example of local plugin to customize your statements here: https://github.com/trax-project/trax3-moodle-xapi-custom
+
+
+## Supporting new events
+
+So far, we have seen how you can customize the xAPI statements for events which are already supported by the **TRAX xAPI Agent** plugin.
+But what if you want to support new events, which are not covered by the **TRAX xAPI Agent** plugin yet?
+
+Once again, you need to create a local plugin named **trax_xapi_custom** which is located in the **/local/trax_xapi_custom** folder.
+
+In this plugin, you must have a config class named **/local/trax_xapi_custom/classes/config.php**,
+with the `supported_events()` method which must return one or several groups of events,
+each group having a name.
+
+In the following example, we declare 1 group named `virtclassroom` with 2 events: `virtclassroom_launched` and `virtclassroom_closed`.
+
+```php
+namespace local_trax_xapi_custom;
+
+defined('MOODLE_INTERNAL') || die();
+
+class config {
+
+    public function supported_events() {
+        return ['virtclassroom' => [
+            '\mod_virtclassroom\event\virtclassroom_launched',
+            '\mod_virtclassroom\event\virtclassroom_closed',
+        ]];
+    }
+}
+```
+
+Of course, you must implement the modelers for these events, as we have already seen.
+
+Then, you must provide a name and a description for each group of events in the lang file of the plugin,
+located in **/local/trax_xapi_custom/lang/en/block_trax_xapi_agent.php**:
+
+```php
+$string['moodle_events_virtclassroom'] = 'Virtual classroom';
+$string['moodle_events_virtclassroom_help'] = 'Virtual classroom events from our awesome virtual classroom plugin.';
+```
+
+Finally, purge the Moodle cache and open the settings of the **TRAX xAPI Agent** plugin.
+In the **Moodle events** section, you will see the group(s) of events you just declared.
+Select them if you want to track them.
+
+That's it. You are now able to track new events with your own defined statements.

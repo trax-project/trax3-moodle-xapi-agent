@@ -48,7 +48,7 @@ class observer {
             return;
         }
         $config = $configs[$event->courseid];
-
+        
         // Keep only supported events.
         if (!selector::should_track($event)) {
             return;

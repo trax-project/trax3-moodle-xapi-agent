@@ -20,7 +20,11 @@ Please, check the [configuration](./docs/configuration.md) page to see how to co
 
 ## xAPI profile
 
-This plugin generates statements conforming with this [xAPI profile](./docs/xapi-profile.md).
+This plugin generates statements conforming with this [VLE xAPI profile](./docs/xapi-profile.md).
+
+## H5P
+
+This plugin supports [H5P xAPI statements](./docs/h5p.md) which are adapted to be consistent with the **VLE xAPI profile**.
 
 ## Customization
 

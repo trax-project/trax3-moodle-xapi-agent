@@ -120,9 +120,17 @@ $string['moodle_events_completion_help'] = 'Course modules completion is tracked
 $string['moodle_events_grading'] = 'Grading';
 $string['moodle_events_grading_help'] = 'Course modules grading is tracked with the `scored`, `passed`, `failed` and `voided-score` verbs.';
 
+$string['moodle_events_h5p'] = 'H5P';
+$string['moodle_events_h5p_help'] = 'H5P xAPI events are tracked. Refer to H5P docs for further details.';
+
 // xAPI modeling.
 $string['xapi_modeling'] = 'xAPI modeling';
-$string['xapi_modeling_help'] = 'In this section, you can define how this plugin will generate xAPI data from Moodle events';
+$string['xapi_modeling_help'] = 'In this section, you can define your own xAPI modeling customization.';
+
+$string['custom_plugin'] = 'Customization plugin';
+$string['custom_plugin_help'] = "The customization plugin must be a local plugin, located in the './local' folder, following the
+<a href='https://github.com/trax-project/trax3-moodle-xapi-agent/blob/master/docs/customization.md' target='_blank'>customization guidelines</a>.
+Please, enter its name without the 'local_' prefix.";
 
 $string['custom_templates_folder'] = 'Custom templates folder';
 $string['custom_templates_folder_help'] = 'You can use a custom folder (typically `local/trax_xapi_agent/templates`) to provide your own xAPI templates.';
