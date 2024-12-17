@@ -115,7 +115,7 @@ $string['moodle_events_navigation'] = 'Navigation';
 $string['moodle_events_navigation_help'] = 'Navigation in courses and course modules is tracked with the `viewed` verb.';
 
 $string['moodle_events_completion'] = 'Completion';
-$string['moodle_events_completion_help'] = 'Course modules completion is tracked with the `completed` and `voided-completion` verbs.';
+$string['moodle_events_completion_help'] = 'Courses and course modules completion is tracked with the `completed` and `voided-completion` verbs.';
 
 $string['moodle_events_grading'] = 'Grading';
 $string['moodle_events_grading_help'] = 'Course modules grading is tracked with the `scored`, `passed`, `failed` and `voided-score` verbs.';

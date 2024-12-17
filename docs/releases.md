@@ -4,7 +4,7 @@
 
 - Plugin name changed from `trax_xapi_agent` to `trax_xapi` in order to prevent too long table names
 - Moodle 4.5 required
-- New events supported: authentication
+- New events supported: authentication, course completion
 
 ## 0.2
 

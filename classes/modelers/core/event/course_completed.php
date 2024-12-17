@@ -22,38 +22,20 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_trax_xapi\modelers;
+namespace block_trax_xapi\modelers\core\event;
 
 defined('MOODLE_INTERNAL') || die();
 
-class events {
+use block_trax_xapi\modelers\base as modeler;
+
+class course_completed extends modeler {
 
     /**
-     * Get the supported Moodle events.
+     * Get the JSON template.
      *
-     * @return array
+     * @return string|false
      */
-    public static function list() {
-        return [
-            'navigation' => [
-                '\core\event\course_viewed'
-                //'mod_xxx_course_module_viewed', Supported programmatically
-            ],
-            'completion' => [
-                '\core\event\course_module_completion_updated',
-                '\core\event\course_completed',
-            ],
-            'grading' => [
-                '\core\event\user_graded'
-            ],
-            'authentication' => [
-                '\core\event\user_loggedin',
-                '\core\event\user_loggedout',
-                '\core\event\user_loggedinas'
-            ],
-            'h5p' => [
-                '\mod_h5pactivity\event\statement_received'
-            ],
-        ];
+    protected function template() {
+        return 'core/course_completed';
     }
 }

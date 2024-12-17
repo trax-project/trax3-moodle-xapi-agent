@@ -128,6 +128,84 @@ This statement is generated from the `\xxx\event\course_module_viewed` Moodle ev
 
 ## Completion
 
+#### Completed a course
+
+This statement is generated from the `\core\event\course_completed` Moodle event.
+
+```json
+{
+    "actor": {
+        "objectType": "Agent",
+        "name": "Learner One",
+        "account": {
+            "name": "learner1",
+            "homePage": "http://my.moodle/username"
+        }
+    },
+    "verb": {
+        "id": "https://adlnet.gov/expapi/verbs/completed"
+    },
+    "object": {
+        "objectType": "Activity",
+        "id": "http://my.moodle/xapi/activities/course/2",
+        "definition": {
+            "type": "https://w3id.org/xapi/tla/activity-types/content_set",
+            "name": {
+                "en": "Test"
+            },
+            "extensions": {
+                "https://w3id.org/xapi/vle/extensions/url": "http://moodle45.test/course/view.php?id=2",
+                "https://w3id.org/xapi/vle/extensions/component": "course"
+            }
+        }
+    },
+    "result": {
+        "completion": true
+    },
+    "context": {
+        "instructor": {
+            "objectType": "Agent",
+            "name": "Sébastien Fraysse",
+            "account": {
+                "name": "admin",
+                "homePage": "http://my.moodle/username"
+            }
+        },
+        "contextActivities": {
+            "parent": [
+                {
+                    "id": "http://my.moodle/xapi/activities/course/2",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/tla/activity-types/content_set",
+						"extensions": {
+                            "https://w3id.org/xapi/vle/extensions/component": "course"
+                        }
+                    }
+                }
+            ],
+            "grouping": [
+                {
+                    "id": "http://my.moodle",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/vle/activity-types/system"
+                    }
+                }
+            ],
+            "category": [
+                {
+                    "id": "https://w3id.org/xapi/vle",
+                    "definition": {
+                        "type": "http://adlnet.gov/expapi/activities/profile"
+                    }
+                }
+            ]
+        },
+        "platform": "Moodle"
+    },
+    "timestamp": "2024-11-13T14:07:22+00:00"
+}
+```
+
 #### Completed a course module
 
 This statement is generated from the `\core\event\course_module_completion_updated` Moodle event, when a completion state is defined by this event.
