@@ -17,7 +17,7 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,7 +30,7 @@ $courseid = required_param('courseid', PARAM_INT);
 $lrs = required_param('lrs', PARAM_INT);
 $returnurl = required_param('returnurl', PARAM_URL);
 
-$DB->delete_records('block_trax_xapi_agent_errors', [
+$DB->delete_records('block_trax_xapi_errors', [
     'courseid' => null,
     'lrs' => $lrs,
 ]);

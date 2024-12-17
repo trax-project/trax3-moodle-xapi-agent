@@ -17,15 +17,15 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Plugin.
 $string['pluginname'] = 'TRAX xAPI Agent';
-$string['trax_xapi_agent:addinstance'] = 'Add the block';
-$string['trax_xapi_agent:view'] = 'View block';
+$string['trax_xapi:addinstance'] = 'Add the block';
+$string['trax_xapi:view'] = 'View block';
 $string['block_title'] = 'xAPI';
 $string['block_settings'] = 'xAPI settings for this course';
 
@@ -133,7 +133,7 @@ $string['custom_plugin_help'] = "The customization plugin must be a local plugin
 Please, enter its name without the 'local_' prefix.";
 
 $string['custom_templates_folder'] = 'Custom templates folder';
-$string['custom_templates_folder_help'] = 'You can use a custom folder (typically `local/trax_xapi_agent/templates`) to provide your own xAPI templates.';
+$string['custom_templates_folder_help'] = 'You can use a custom folder (typically `local/trax_xapi/templates`) to provide your own xAPI templates.';
 
 $string['custom_modelers_namespace'] = 'Custom modelers namespace';
 $string['custom_modelers_namespace_help'] = 'You can use a custom namespace (typically `local_trax_xapi\modelers`) to provide your own xAPI modelers.';

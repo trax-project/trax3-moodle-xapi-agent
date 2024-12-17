@@ -17,17 +17,17 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_trax_xapi_agent\repositories;
+namespace block_trax_xapi\repositories;
 
 defined('MOODLE_INTERNAL') || die();
 
-use block_trax_xapi_agent\config;
-use block_trax_xapi_agent\utils;
+use block_trax_xapi\config;
+use block_trax_xapi\utils;
 use moodle_url;
 
 class activities {
@@ -115,7 +115,7 @@ class activities {
         if ($context->contextlevel == 10) {
             return $this->get_system_props();
         }
-        throw new \moodle_exception('exception_template_context', 'block_trax_xapi_agent');
+        throw new \moodle_exception('exception_template_context', 'block_trax_xapi');
     }
 
     /**

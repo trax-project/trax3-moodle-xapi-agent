@@ -17,7 +17,7 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $tasks = array(
     array(
-        'classname' => '\block_trax_xapi_agent\task\scan_log_store_task',
+        'classname' => '\block_trax_xapi\task\scan_log_store_task',
         'blocking' => 0,
         'minute' => '*/5',
         'hour' => '*',

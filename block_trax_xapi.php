@@ -17,23 +17,23 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use block_trax_xapi_agent\config;
+use block_trax_xapi\config;
 
 require_once($CFG->dirroot . '/lib/weblib.php');
 //use moodle_url;
 
-class block_trax_xapi_agent extends block_base {
+class block_trax_xapi extends block_base {
 
     /**
      * Core function used to initialize the block.
      */
     public function init() {
-        $this->title = get_string('block_title', 'block_trax_xapi_agent');
+        $this->title = get_string('block_title', 'block_trax_xapi');
     }
 
     /**
@@ -85,33 +85,33 @@ class block_trax_xapi_agent extends block_base {
 
         // Check to see user can view/use the accessmap.
         $context = context_course::instance($COURSE->id);
-        if (!isloggedin() || isguestuser() || !has_capability('block/trax_xapi_agent:view', $context)) {
+        if (!isloggedin() || isguestuser() || !has_capability('block/trax_xapi:view', $context)) {
             return $this->content;
         }
 
         // No LRS.
         // No events mode.
         if (empty($this->config->lrs) || empty($this->config->events_mode)) {
-            $this->content->text = '<p>'.get_string('course_lrs_0', 'block_trax_xapi_agent').'</p>';
+            $this->content->text = '<p>'.get_string('course_lrs_0', 'block_trax_xapi').'</p>';
             return $this->content;
         }
 
         // Selected LRS.
-        $this->content->text = '<p>'.get_string('course_lrs_'.$this->config->lrs, 'block_trax_xapi_agent').'</p>';
+        $this->content->text = '<p>'.get_string('course_lrs_'.$this->config->lrs, 'block_trax_xapi').'</p>';
 
         // Events mode.
-        $this->content->text .= '<p>'.get_string('course_events_mode_'.$this->config->events_mode, 'block_trax_xapi_agent', $this->config->logs_from).'</p>';
+        $this->content->text .= '<p>'.get_string('course_events_mode_'.$this->config->events_mode, 'block_trax_xapi', $this->config->logs_from).'</p>';
 
         // Log store mode.
         if ($this->config->events_mode == config::EVENTS_MODE_LOGS) {
             // Get the log status.
-            if ($status = $DB->get_record('block_trax_xapi_agent_logs_status', [
+            if ($status = $DB->get_record('block_trax_xapi_logs_status', [
                 'courseid' => $COURSE->id,
                 'lrs' => $this->config->lrs
             ])) {
-                $this->content->text .= '<p class="mb-2">'.get_string('logs_status_last_run', 'block_trax_xapi_agent', userdate($status->timestamp, "%d/%m/%Y at %H:%M")).'</p>';
+                $this->content->text .= '<p class="mb-2">'.get_string('logs_status_last_run', 'block_trax_xapi', userdate($status->timestamp, "%d/%m/%Y at %H:%M")).'</p>';
 
-                $url = (new moodle_url("/blocks/trax_xapi_agent/actions/replay_logs.php", [
+                $url = (new moodle_url("/blocks/trax_xapi/actions/replay_logs.php", [
                         'courseid' => $COURSE->id,
                         'lrs' => $this->config->lrs,
                         'returnurl' => $this->page->url->__toString()
@@ -120,39 +120,39 @@ class block_trax_xapi_agent extends block_base {
                 $this->content->text .= '
                     <div class="mb-3">
                         <a href="' . $url . '" class="btn btn-secondary">
-                        ' . get_string('logs_status_replay', 'block_trax_xapi_agent', $this->config->logs_from) . '
+                        ' . get_string('logs_status_replay', 'block_trax_xapi', $this->config->logs_from) . '
                         </a>
                     </div>
                 ';
             } else {
-                $this->content->text .= '<p class="text-warning"><b>'.get_string('logs_status_never_run', 'block_trax_xapi_agent').'</b></p>';
+                $this->content->text .= '<p class="text-warning"><b>'.get_string('logs_status_never_run', 'block_trax_xapi').'</b></p>';
             }
         }
 
         // Show errors.
-        $courseErrors = $DB->get_records('block_trax_xapi_agent_errors', ['courseid' => $COURSE->id, 'lrs' => $this->config->lrs]);
+        $courseErrors = $DB->get_records('block_trax_xapi_errors', ['courseid' => $COURSE->id, 'lrs' => $this->config->lrs]);
         if (count($courseErrors)) {
             $this->content->text .= '<p class="text-danger">
-                <a href=" ' . new moodle_url("/blocks/trax_xapi_agent/views/course_errors.php", [
+                <a href=" ' . new moodle_url("/blocks/trax_xapi/views/course_errors.php", [
                     'courseid' => $COURSE->id,
                     'lrs' => $this->config->lrs,
                     'returnurl' => $this->page->url->__toString()
                 ]) . '
                 " class="text-danger">
-                    <b>'.get_string('course_errors_notice', 'block_trax_xapi_agent', count($courseErrors)).'</b>
+                    <b>'.get_string('course_errors_notice', 'block_trax_xapi', count($courseErrors)).'</b>
                 </a>
             </p>';
         }
-        $otherErrors = $DB->get_records('block_trax_xapi_agent_errors', ['courseid' => null, 'lrs' => $this->config->lrs]);
+        $otherErrors = $DB->get_records('block_trax_xapi_errors', ['courseid' => null, 'lrs' => $this->config->lrs]);
         if (count($otherErrors)) {
             $this->content->text .= '<p class="text-danger">
-                <a href=" ' . new moodle_url("/blocks/trax_xapi_agent/views/client_errors.php", [
+                <a href=" ' . new moodle_url("/blocks/trax_xapi/views/client_errors.php", [
                     'courseid' => $COURSE->id,
                     'lrs' => $this->config->lrs,
                     'returnurl' => $this->page->url->__toString()
                 ]) . '
                 " class="text-danger">
-                    <b>'.get_string('client_errors_notice', 'block_trax_xapi_agent', count($otherErrors)).'</b>
+                    <b>'.get_string('client_errors_notice', 'block_trax_xapi', count($otherErrors)).'</b>
                 </a>
             </p>';
         }
@@ -179,7 +179,7 @@ class block_trax_xapi_agent extends block_base {
     public function get_config_for_external() {
         // Return all settings for all users since it is safe (no private keys, etc..).
         $instanceconfigs = !empty($this->config) ? $this->config : new stdClass();
-        $pluginconfigs = get_config('block_trax_xapi_agent');
+        $pluginconfigs = get_config('block_trax_xapi');
 
         return (object) [
             'instance' => $instanceconfigs,

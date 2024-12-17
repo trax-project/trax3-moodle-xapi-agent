@@ -17,16 +17,16 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_trax_xapi_agent\repositories;
+namespace block_trax_xapi\repositories;
 
 defined('MOODLE_INTERNAL') || die();
 
-use block_trax_xapi_agent\config;
+use block_trax_xapi\config;
 use core_user;
 
 require_once($CFG->dirroot.'/user/profile/lib.php');
@@ -38,7 +38,7 @@ class actors extends repository {
      *
      * @var string $table
      */
-    protected $table = 'block_trax_xapi_agent_actors';
+    protected $table = 'block_trax_xapi_actors';
 
     /**
      * Get a user, given a Moodle ID.

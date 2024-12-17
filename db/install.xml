@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/trax_xapi_agent/db" VERSION="20140120" COMMENT="XMLDB file for Moodle plugin blocks/trax_xapi_agent"
+<XMLDB PATH="blocks/trax_xapi/db" VERSION="20140120" COMMENT="XMLDB file for Moodle plugin blocks/trax_xapi"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
 
-    <TABLE NAME="block_trax_xapi_agent_actors" COMMENT="Actors table">
+    <TABLE NAME="block_trax_xapi_actors" COMMENT="Actors table">
         <FIELDS>
             <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
             <FIELD NAME="mid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -21,7 +21,7 @@
         </INDEXES>
     </TABLE>
 
-    <TABLE NAME="block_trax_xapi_agent_errors" COMMENT="Errors table">
+    <TABLE NAME="block_trax_xapi_errors" COMMENT="Errors table">
         <FIELDS>
             <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
             <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
@@ -36,7 +36,7 @@
         </KEYS>
     </TABLE>
 
-    <TABLE NAME="block_trax_xapi_agent_logs_status" COMMENT="Logs status table">
+    <TABLE NAME="block_trax_xapi_logs_status" COMMENT="Logs status table">
         <FIELDS>
             <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
             <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>

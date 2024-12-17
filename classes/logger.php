@@ -17,12 +17,12 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_trax_xapi_agent;
+namespace block_trax_xapi;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -54,7 +54,7 @@ class logger {
      */
     public static function log_modeling_error(int $lrsnum, $event, int $error, \Exception $exception = null) {
         global $DB;
-        $DB->insert_record('block_trax_xapi_agent_errors', [
+        $DB->insert_record('block_trax_xapi_errors', [
             'lrs' => $lrsnum,
             'type' => self::ERROR_MODELING,
             'error' => $error,
@@ -81,7 +81,7 @@ class logger {
      */
     public static function log_http_error(int $lrsnum, string $endpoint, string $api, string $method, mixed $data, array $headers, \Exception $exception = null) {
         global $DB;
-        $DB->insert_record('block_trax_xapi_agent_errors', [
+        $DB->insert_record('block_trax_xapi_errors', [
             'lrs' => $lrsnum,
             'type' => self::ERROR_HTTP,
             'error' => 0,
@@ -109,7 +109,7 @@ class logger {
      */
     public static function log_lrs_error(int $lrsnum, string $api, string $method, mixed $data, object $client_response) {
         global $DB;
-        $DB->insert_record('block_trax_xapi_agent_errors', [
+        $DB->insert_record('block_trax_xapi_errors', [
             'lrs' => $lrsnum,
             'type' => self::ERROR_LRS,
             'error' => $client_response->code,

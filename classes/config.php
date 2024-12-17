@@ -17,12 +17,12 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_trax_xapi_agent;
+namespace block_trax_xapi;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -87,7 +87,7 @@ class config {
      */
     public static function lrs_endpoint() {
         return rtrim(
-            get_config('block_trax_xapi_agent', 'lrs_endpoint'),
+            get_config('block_trax_xapi', 'lrs_endpoint'),
             "/ \n\r\t\v\x00"
         );
     }
@@ -98,7 +98,7 @@ class config {
      * @return string
      */
     public static function lrs_username() {
-        return trim(get_config('block_trax_xapi_agent', 'lrs_username'));
+        return trim(get_config('block_trax_xapi', 'lrs_username'));
     }
 
     /**
@@ -107,7 +107,7 @@ class config {
      * @return string
      */
     public static function lrs_password() {
-        return trim(get_config('block_trax_xapi_agent', 'lrs_password'));
+        return trim(get_config('block_trax_xapi', 'lrs_password'));
     }
 
     /**
@@ -117,7 +117,7 @@ class config {
      */
     public static function lrs2_endpoint() {
         return rtrim(
-            get_config('block_trax_xapi_agent', 'lrs2_endpoint'),
+            get_config('block_trax_xapi', 'lrs2_endpoint'),
             "/ \n\r\t\v\x00"
         );
     }
@@ -128,7 +128,7 @@ class config {
      * @return string
      */
     public static function lrs2_username() {
-        return trim(get_config('block_trax_xapi_agent', 'lrs2_username'));
+        return trim(get_config('block_trax_xapi', 'lrs2_username'));
     }
 
     /**
@@ -137,7 +137,7 @@ class config {
      * @return string
      */
     public static function lrs2_password() {
-        return trim(get_config('block_trax_xapi_agent', 'lrs2_password'));
+        return trim(get_config('block_trax_xapi', 'lrs2_password'));
     }
 
     /**
@@ -147,13 +147,13 @@ class config {
      */
     public static function lrs_options() {
         $targets = [
-            self::LRS_NO => get_string('lrs_no', 'block_trax_xapi_agent'),
+            self::LRS_NO => get_string('lrs_no', 'block_trax_xapi'),
         ];
         if (!empty(self::lrs_endpoint())) {
-            $targets[self::LRS_PRODUCTION] = get_string('lrs_production', 'block_trax_xapi_agent');
+            $targets[self::LRS_PRODUCTION] = get_string('lrs_production', 'block_trax_xapi');
         }
         if (!empty(self::lrs2_endpoint())) {
-            $targets[self::LRS_TEST] = get_string('lrs_test', 'block_trax_xapi_agent');
+            $targets[self::LRS_TEST] = get_string('lrs_test', 'block_trax_xapi');
         }
         return $targets;
     }
@@ -211,10 +211,10 @@ class config {
      */
     public static function actors_identification_modes() {
         return [
-            self::ACTORS_ID_USERNAME => get_string('actors_id_username', 'block_trax_xapi_agent'),
-            self::ACTORS_ID_DBID => get_string('actors_id_dbid', 'block_trax_xapi_agent'),
-            self::ACTORS_ID_UUID => get_string('actors_id_uuid', 'block_trax_xapi_agent'),
-            self::ACTORS_ID_EMAIL => get_string('actors_id_email', 'block_trax_xapi_agent'),
+            self::ACTORS_ID_USERNAME => get_string('actors_id_username', 'block_trax_xapi'),
+            self::ACTORS_ID_DBID => get_string('actors_id_dbid', 'block_trax_xapi'),
+            self::ACTORS_ID_UUID => get_string('actors_id_uuid', 'block_trax_xapi'),
+            self::ACTORS_ID_EMAIL => get_string('actors_id_email', 'block_trax_xapi'),
         ];
     }
 
@@ -224,7 +224,7 @@ class config {
      * @return bool
      */
     public static function actors_id_with_username() {
-        return get_config('block_trax_xapi_agent', 'actors_id_mode') == self::ACTORS_ID_USERNAME;
+        return get_config('block_trax_xapi', 'actors_id_mode') == self::ACTORS_ID_USERNAME;
     }
 
     /**
@@ -233,7 +233,7 @@ class config {
      * @return bool
      */
     public static function actors_id_with_dbid() {
-        return get_config('block_trax_xapi_agent', 'actors_id_mode') == self::ACTORS_ID_DBID;
+        return get_config('block_trax_xapi', 'actors_id_mode') == self::ACTORS_ID_DBID;
     }
 
     /**
@@ -242,7 +242,7 @@ class config {
      * @return bool
      */
     public static function actors_id_with_uuid() {
-        return get_config('block_trax_xapi_agent', 'actors_id_mode') == self::ACTORS_ID_UUID;
+        return get_config('block_trax_xapi', 'actors_id_mode') == self::ACTORS_ID_UUID;
     }
 
     /**
@@ -251,7 +251,7 @@ class config {
      * @return bool
      */
     public static function actors_id_with_email() {
-        return get_config('block_trax_xapi_agent', 'actors_id_mode') == self::ACTORS_ID_EMAIL;
+        return get_config('block_trax_xapi', 'actors_id_mode') == self::ACTORS_ID_EMAIL;
     }
 
     /**
@@ -261,7 +261,7 @@ class config {
      */
     public static function actors_id_with_custom_field() {
         return !empty(
-            get_config('block_trax_xapi_agent', 'actors_id_custom_field')
+            get_config('block_trax_xapi', 'actors_id_custom_field')
         );
     }
 
@@ -271,7 +271,7 @@ class config {
      * @return string
      */
     public static function actors_id_custom_field() {
-        return get_config('block_trax_xapi_agent', 'actors_id_custom_field');
+        return get_config('block_trax_xapi', 'actors_id_custom_field');
     }
 
     /**
@@ -280,7 +280,7 @@ class config {
      * @return bool
      */
     public static function actors_id_includes_name() {
-        return get_config('block_trax_xapi_agent', 'actors_id_include_name') == 1;
+        return get_config('block_trax_xapi', 'actors_id_include_name') == 1;
     }
 
     /**
@@ -291,7 +291,7 @@ class config {
      */
     public static function actors_id_homepage(string $mode) {
         return rtrim(
-            get_config('block_trax_xapi_agent', 'actors_id_homepage'),
+            get_config('block_trax_xapi', 'actors_id_homepage'),
             "/ \n\r\t\v\x00"
         ) . '/' . $mode;
     }
@@ -303,7 +303,7 @@ class config {
      */
     public static function activities_id_base() {
         return rtrim(
-            get_config('block_trax_xapi_agent', 'activities_id_base'),
+            get_config('block_trax_xapi', 'activities_id_base'),
             "/ \n\r\t\v\x00"
         );
     }
@@ -315,7 +315,7 @@ class config {
      * @return bool
      */
     public static function track_moodle_event(string $name) {
-        return get_config('block_trax_xapi_agent', "moodle_events_$name");
+        return get_config('block_trax_xapi', "moodle_events_$name");
     }
 
     /**
@@ -325,7 +325,7 @@ class config {
      */
     public static function custom_templates_folder() {
         global $CFG;
-        $plugin = trim(get_config('block_trax_xapi_agent', 'custom_plugin'));
+        $plugin = trim(get_config('block_trax_xapi', 'custom_plugin'));
 
         if (empty($plugin)) {
             return false;
@@ -340,7 +340,7 @@ class config {
      * @return string|false
      */
     public static function custom_modelers_namespace() {
-        $plugin = trim(get_config('block_trax_xapi_agent', 'custom_plugin'));
+        $plugin = trim(get_config('block_trax_xapi', 'custom_plugin'));
 
         if (empty($plugin)) {
             return false;
@@ -380,7 +380,7 @@ class config {
      * @return array
      */
     public static function supported_custom_events() {
-        $plugin = trim(get_config('block_trax_xapi_agent', 'custom_plugin'));
+        $plugin = trim(get_config('block_trax_xapi', 'custom_plugin'));
         if (empty($plugin)) {
             return [];
         }
@@ -402,11 +402,11 @@ class config {
      */
     public static function supported_domains() {
         $res = [
-            'block_trax_xapi_agent' => array_keys(self::supported_events()),
+            'block_trax_xapi' => array_keys(self::supported_events()),
         ];
 
         // Custom events.
-        $plugin = trim(get_config('block_trax_xapi_agent', 'custom_plugin'));
+        $plugin = trim(get_config('block_trax_xapi', 'custom_plugin'));
         $domains = array_keys(self::supported_custom_events());
         if (empty($domains)) {
             return $res;
@@ -422,9 +422,9 @@ class config {
      */
     public static function events_mode_options() {
         return [
-            self::EVENTS_MODE_NO => get_string('events_mode_no', 'block_trax_xapi_agent'),
-            self::EVENTS_MODE_LIVE => get_string('events_mode_live', 'block_trax_xapi_agent'),
-            self::EVENTS_MODE_LOGS => get_string('events_mode_logs', 'block_trax_xapi_agent'),
+            self::EVENTS_MODE_NO => get_string('events_mode_no', 'block_trax_xapi'),
+            self::EVENTS_MODE_LIVE => get_string('events_mode_live', 'block_trax_xapi'),
+            self::EVENTS_MODE_LOGS => get_string('events_mode_logs', 'block_trax_xapi'),
         ];
     }
 
@@ -438,11 +438,11 @@ class config {
         global $DB;
 
         $course_context = context_course::instance($courseid);
-        $block_instance_record = $DB->get_record('block_instances', ['blockname' => 'trax_xapi_agent', 'parentcontextid' => $course_context->id]);
+        $block_instance_record = $DB->get_record('block_instances', ['blockname' => 'trax_xapi', 'parentcontextid' => $course_context->id]);
 
         return $block_instance_record === false
             ? false
-            : block_instance('trax_xapi_agent', $block_instance_record)->config;
+            : block_instance('trax_xapi', $block_instance_record)->config;
     }
 
     /**
@@ -473,12 +473,12 @@ class config {
         global $DB;
         
         // Get all the TRAX xAPI blocks and there configs.
-        $block_instance_records = $DB->get_records('block_instances', ['blockname' => 'trax_xapi_agent']);
+        $block_instance_records = $DB->get_records('block_instances', ['blockname' => 'trax_xapi']);
 
         // Extract all the configs indexed by their context IDs.
         $configs_by_context_ids = [];
         foreach ($block_instance_records as $block_instance_record) {
-            $config = block_instance('trax_xapi_agent', $block_instance_record)->config;
+            $config = block_instance('trax_xapi', $block_instance_record)->config;
             if (!empty($config->lrs)
                 && self::lrs_configured($config->lrs)
                 && !empty($config->events_mode)

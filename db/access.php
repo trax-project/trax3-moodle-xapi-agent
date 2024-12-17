@@ -17,7 +17,7 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
 
-    'block/trax_xapi_agent:addinstance' => array(
+    'block/trax_xapi:addinstance' => array(
         'riskbitmask' => RISK_SPAM | RISK_XSS,
 
         'captype' => 'write',
@@ -39,7 +39,7 @@ $capabilities = array(
         'clonepermissionsfrom' => 'moodle/site:manageblocks'
     ),
 
-    'block/trax_xapi_agent:view' => array(
+    'block/trax_xapi:view' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(

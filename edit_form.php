@@ -17,7 +17,7 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,9 +26,9 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/lib/grade/constants.php');
 
-use block_trax_xapi_agent\config;
+use block_trax_xapi\config;
 
-class block_trax_xapi_agent_edit_form extends block_edit_form {
+class block_trax_xapi_edit_form extends block_edit_form {
 
     /**
      * The definition of the fields to use.
@@ -37,25 +37,25 @@ class block_trax_xapi_agent_edit_form extends block_edit_form {
      */
     protected function specific_definition($mform) {
         // Course settings.
-        $mform->addElement('header', 'configheader', get_string('block_settings', 'block_trax_xapi_agent'));
+        $mform->addElement('header', 'configheader', get_string('block_settings', 'block_trax_xapi'));
 
         // Course LRS.
         $mform->addElement('select', 'config_lrs',
-            get_string('lrs', 'block_trax_xapi_agent'),
+            get_string('lrs', 'block_trax_xapi'),
             config::lrs_options()
         );
         $mform->setDefault('config_lrs', config::LRS_NO);
 
         // Events mode.
         $mform->addElement('select', 'config_events_mode',
-            get_string('events_mode', 'block_trax_xapi_agent'),
+            get_string('events_mode', 'block_trax_xapi'),
             config::events_mode_options()
         );
         $mform->setDefault('config_events_mode', config::EVENTS_MODE_NO);
 
         // From date (logs)
         $mform->addElement('text', 'config_logs_from',
-            get_string('logs_from', 'block_trax_xapi_agent')
+            get_string('logs_from', 'block_trax_xapi')
         );
         $mform->setDefault('config_logs_from', date('d/m/Y', time()));
         $mform->setType('config_logs_from', PARAM_TEXT);

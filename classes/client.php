@@ -17,16 +17,16 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_trax_xapi_agent;
+namespace block_trax_xapi;
 
 defined('MOODLE_INTERNAL') || die();
 
-use block_trax_xapi_agent\exceptions\client_exception;
+use block_trax_xapi\exceptions\client_exception;
 
 class client {
 
@@ -36,7 +36,7 @@ class client {
      * @param int $lrsnum
      * @param array $statements
      * @return void
-     * @throws \block_trax_xapi_agent\exceptions\client_exception
+     * @throws \block_trax_xapi\exceptions\client_exception
      */
     public static function send(int $lrsnum, array $statements) {
         $lrs = new lrs($lrsnum);
@@ -62,7 +62,7 @@ class client {
      *
      * @param int $lrsnum
      * @return void
-     * @throws \block_trax_xapi_agent\exceptions\client_exception
+     * @throws \block_trax_xapi\exceptions\client_exception
      */
     public static function flush($lrsnum) {
     }

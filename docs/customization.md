@@ -8,7 +8,7 @@ By default, this plugin conforms with an [xAPI profile](./xapi-profile.md) which
 
 ## Templates
 
-The default templates are located in **/blocks/trax_xapi_agent/templates**.
+The default templates are located in **/blocks/trax_xapi/templates**.
 
 Templates are JSON files which define the structure of xAPI statements. Templates are called by modelers in order to transform Moodle events into xAPI statements. Usually, templates use "*placeholders*" to fill some parts of the template. Most of the placeholders have the form **%object:function**, where:
 
@@ -76,18 +76,18 @@ Modelers do basically 2 things:
 - They call a template.
 - They implement specific placeholders required by this template.
 
-The default modelers are located in **/blocks/trax_xapi_agent/classes/modelers**. They are named and organized to reflect the name of Moodle native events. For example, the modeler for the Moodle event named `\core\event\course_viewed` is in the **core/event/course_viewed.php**.
+The default modelers are located in **/blocks/trax_xapi/classes/modelers**. They are named and organized to reflect the name of Moodle native events. For example, the modeler for the Moodle event named `\core\event\course_viewed` is in the **core/event/course_viewed.php**.
 
 There is only one exception to this rule: the **course_module_viewed.php** modeler which is used for all the `xxx_course_module_viewed` events, where `xxx` is a type of Moodle course module (e.g. `mod_scorm`, `mod_forum`, etc.).
 
 But let's come back to the **course_viewed.php** modeler:
 
 ```php
-namespace block_trax_xapi_agent\modelers\core\event;
+namespace block_trax_xapi\modelers\core\event;
 
 defined('MOODLE_INTERNAL') || die();
 
-use block_trax_xapi_agent\modelers\base as modeler;
+use block_trax_xapi\modelers\base as modeler;
 
 class course_viewed extends modeler {
 
@@ -117,11 +117,11 @@ To illustrate this, let's say we want to change the verb of the xAPI statement. 
 Then, we define a custom modeler in **/local/trax_xapi_custom/classes/modelers/core/event/course_viewed.json**, which inherits from the native modeler, and implements a specific function to define the statement verb:
 
 ```php
-namespace block_trax_xapi_agent\modelers\core\event;
+namespace block_trax_xapi\modelers\core\event;
 
 defined('MOODLE_INTERNAL') || die();
 
-use block_trax_xapi_agent\modelers\core\event\course_viewed as modeler;
+use block_trax_xapi\modelers\core\event\course_viewed as modeler;
 
 class course_viewed extends modeler {
 
@@ -168,7 +168,7 @@ class config {
 Of course, you must implement the modelers for these events, as we have already seen.
 
 Then, you must provide a name and a description for each group of events in the lang file of the plugin,
-located in **/local/trax_xapi_custom/lang/en/block_trax_xapi_agent.php**:
+located in **/local/trax_xapi_custom/lang/en/block_trax_xapi.php**:
 
 ```php
 $string['moodle_events_virtclassroom'] = 'Virtual classroom';

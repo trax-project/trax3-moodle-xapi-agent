@@ -2,10 +2,10 @@
 
 ## Installation
 
-From the root folder of your Moodle installation:
+This plugin requires Moodle 4.5+. From the root folder of your Moodle installation:
 
 ```shell
-git clone https://github.com/trax-project/trax3-moodle-xapi-agent.git ./blocks/trax_xapi_agent
+git clone https://github.com/trax-project/trax3-moodle-xapi-agent.git ./blocks/trax_xapi
 ```
 
 Open the Moodle administration page and confirm the installation of the plugin.

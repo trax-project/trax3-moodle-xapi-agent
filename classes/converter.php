@@ -17,17 +17,17 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_trax_xapi_agent;
+namespace block_trax_xapi;
 
 defined('MOODLE_INTERNAL') || die();
 
-use block_trax_xapi_agent\config;
-use block_trax_xapi_agent\modelers\base as modeler;
+use block_trax_xapi\config;
+use block_trax_xapi\modelers\base as modeler;
 
 class converter {
 
@@ -60,7 +60,7 @@ class converter {
             }
             if (empty($modelerClass) || !class_exists($modelerClass)) {
                 // Default modeler class.
-                $modelerClass = '\block_trax_xapi_agent\modelers' . $modelerName;
+                $modelerClass = '\block_trax_xapi\modelers' . $modelerName;
             }
 
             return (new $modelerClass)->statement($event);

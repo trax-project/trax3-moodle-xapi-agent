@@ -17,20 +17,20 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_trax_xapi_agent\sources\logs;
+namespace block_trax_xapi\sources\logs;
 
 defined('MOODLE_INTERNAL') || die();
 
-use block_trax_xapi_agent\config;
-use block_trax_xapi_agent\selector;
-use block_trax_xapi_agent\converter;
-use block_trax_xapi_agent\client;
-use block_trax_xapi_agent\exceptions\client_exception;
+use block_trax_xapi\config;
+use block_trax_xapi\selector;
+use block_trax_xapi\converter;
+use block_trax_xapi\client;
+use block_trax_xapi\exceptions\client_exception;
 
 class scanner {
 
@@ -65,14 +65,14 @@ class scanner {
 
         // Get the status.
         if (!isset($status)) {
-            if (!$status = $DB->get_record('block_trax_xapi_agent_logs_status', ['courseid' => $courseid, 'lrs' => $config->lrs])) {
+            if (!$status = $DB->get_record('block_trax_xapi_logs_status', ['courseid' => $courseid, 'lrs' => $config->lrs])) {
                 $status = (object)[
                     'courseid' => $courseid,
                     'lrs' => $config->lrs,
                     'lastevent' => 0,
                     'timestamp' => time(),
                 ];
-                $status->id = $DB->insert_record('block_trax_xapi_agent_logs_status', $status, true);
+                $status->id = $DB->insert_record('block_trax_xapi_logs_status', $status, true);
             }
         }
 
@@ -109,7 +109,7 @@ class scanner {
         $lastEvent = end($events);
         $status->lastevent = $lastEvent->id;
         $status->timestamp = $lastEvent->timecreated;
-        $DB->update_record('block_trax_xapi_agent_logs_status', $status);
+        $DB->update_record('block_trax_xapi_logs_status', $status);
 
         // Continue: we got some events so they may be others to process.
         // The statements list may have been empty due to modeler skippings.

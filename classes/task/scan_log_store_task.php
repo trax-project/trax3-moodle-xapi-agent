@@ -17,16 +17,16 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_trax_xapi_agent\task;
+namespace block_trax_xapi\task;
 
 defined('MOODLE_INTERNAL') || die();
 
-use block_trax_xapi_agent\sources\logs\scanner;
+use block_trax_xapi\sources\logs\scanner;
 
 class scan_log_store_task extends \core\task\scheduled_task
 {
@@ -37,7 +37,7 @@ class scan_log_store_task extends \core\task\scheduled_task
      */
     public function get_name()
     {
-        return get_string('task_scan_log_store', 'block_trax_xapi_agent');
+        return get_string('task_scan_log_store', 'block_trax_xapi');
     }
 
     /**

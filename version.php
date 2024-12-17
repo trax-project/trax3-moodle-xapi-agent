@@ -17,14 +17,14 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2022041201;                            // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2022041200;                            // Requires this Moodle version.
-$plugin->component = 'block_trax_xapi_agent';               // Full name of the plugin (used for diagnostics)
+$plugin->version   = 2024100100;                            // The current module version (Date: YYYYMMDDXX).
+$plugin->requires  = 2024100100;                            // Requires this Moodle version.
+$plugin->component = 'block_trax_xapi';                     // Full name of the plugin (used for diagnostics)
 

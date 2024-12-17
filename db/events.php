@@ -17,7 +17,7 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 $observers = array (
     array (
         'eventname' => '*',
-        'callback'  => 'block_trax_xapi_agent\sources\events\observer::catch',
+        'callback'  => 'block_trax_xapi\sources\events\observer::catch',
         'internal'  => false, // This means that we get events only after transaction commit.
     ),
 );

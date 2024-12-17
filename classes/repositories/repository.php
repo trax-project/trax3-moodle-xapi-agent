@@ -17,16 +17,16 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_trax_xapi_agent\repositories;
+namespace block_trax_xapi\repositories;
 
 defined('MOODLE_INTERNAL') || die();
 
-use block_trax_xapi_agent\utils;
+use block_trax_xapi\utils;
 
 abstract class repository {
 
@@ -63,7 +63,7 @@ abstract class repository {
     public function get_db_entry_or_fail(int $mid, string $type) {
         $entry = $this->get_db_entry($mid, $type);
         if (!$entry) {
-            throw new \moodle_exception('exception_entry_not_found', 'block_trax_xapi_agent');
+            throw new \moodle_exception('exception_entry_not_found', 'block_trax_xapi');
         }
         return $entry;
     }
@@ -91,7 +91,7 @@ abstract class repository {
     public function get_db_entry_by_uuid_or_fail(string $uuid) {
         $entry = $this->get_db_entry_by_uuid($uuid);
         if (!$entry) {
-            throw new \moodle_exception('exception_entry_not_found', 'block_trax_xapi_agent');
+            throw new \moodle_exception('exception_entry_not_found', 'block_trax_xapi');
         }
         return $entry;
     }

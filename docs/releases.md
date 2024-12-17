@@ -1,9 +1,14 @@
 # Releases
 
+## 0.3
+
+- Plugin name changed from `trax_xapi_agent` to `trax_xapi` in order to prevent too long table names
+- Moodle 4.5 required
+
 ## 0.2
 
 - H5P support
-- Customization: support new events, not supported by the plugin yet
+- Customization: support new events with a local plugin
 
 ## 0.1
 

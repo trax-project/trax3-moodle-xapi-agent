@@ -17,12 +17,12 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_trax_xapi_agent\repositories;
+namespace block_trax_xapi\repositories;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -34,7 +34,7 @@ class repo {
     /**
      * Get the actors repository.
      *
-     * @return \block_trax_xapi_agent\repositories\actors
+     * @return \block_trax_xapi\repositories\actors
      */
     public static function actors() {
         return !isset(self::$actors) ? self::$actors = new actors : self::$actors;
@@ -43,7 +43,7 @@ class repo {
     /**
      * Get the activities repository.
      *
-     * @return \block_trax_xapi_agent\repositories\activities
+     * @return \block_trax_xapi\repositories\activities
      */
     public static function activities() {
         return !isset(self::$activities) ? self::$activities = new activities : self::$activities;

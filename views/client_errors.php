@@ -17,7 +17,7 @@
 /**
  * TRAX xAPI Agent plugin.
  *
- * @package    block_trax_xapi_agent
+ * @package    block_trax_xapi
  * @copyright  2024 Sébastien Fraysse <sebastien@fraysse.eu>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -39,7 +39,7 @@ $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 $PAGE->set_course($course);
 $context = $PAGE->context;
 
-require_capability('block/trax_xapi_agent:view', $context);
+require_capability('block/trax_xapi:view', $context);
 
 $urlparams = [
     'courseid' => $courseid,
@@ -47,22 +47,22 @@ $urlparams = [
     'returnurl' => $returnurl,
 ];
 
-$baseurl = new moodle_url('/blocks/trax_xapi_agent/views/course_errors.php', $urlparams);
+$baseurl = new moodle_url('/blocks/trax_xapi/views/course_errors.php', $urlparams);
 $PAGE->set_url($baseurl);
 
-$title = get_string('client_errors', 'block_trax_xapi_agent');
+$title = get_string('client_errors', 'block_trax_xapi');
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
 
 $PAGE->navbar->add(get_string('blocks'));
-$PAGE->navbar->add(get_string('pluginname', 'block_trax_xapi_agent'));
-$PAGE->navbar->add(get_string('client_errors', 'block_trax_xapi_agent'), $baseurl);
+$PAGE->navbar->add(get_string('pluginname', 'block_trax_xapi'));
+$PAGE->navbar->add(get_string('client_errors', 'block_trax_xapi'), $baseurl);
 echo $OUTPUT->header();
 
 // Fetch data.
 
-$errors = $DB->get_records('block_trax_xapi_agent_errors', [
+$errors = $DB->get_records('block_trax_xapi_errors', [
     'courseid' => null,
     'lrs' => $lrs
 ]);
@@ -74,8 +74,8 @@ $table = new flexible_table('client-errors');
 
 $table->define_columns(['timestamp', 'type']);
 $table->define_headers([
-    get_string('timestamp', 'block_trax_xapi_agent'),
-    get_string('type', 'block_trax_xapi_agent'),
+    get_string('timestamp', 'block_trax_xapi'),
+    get_string('type', 'block_trax_xapi'),
 ]);
 $table->define_baseurl($baseurl);
 
@@ -92,19 +92,19 @@ $table->setup();
 
 foreach($errors as $error) {
     $timestamp = userdate($error->timestamp, "%d/%m/%Y at %H:%M");
-    $type = $error->error ? $error->error : get_string('error_http', 'block_trax_xapi_agent');
+    $type = $error->error ? $error->error : get_string('error_http', 'block_trax_xapi');
     $table->add_data([$timestamp, $type]);
 }
 $table->print_html();
 
 // Delete errors.
 
-$url = (new moodle_url("/blocks/trax_xapi_agent/actions/delete_client_errors.php", $urlparams))->__toString();
+$url = (new moodle_url("/blocks/trax_xapi/actions/delete_client_errors.php", $urlparams))->__toString();
 
 echo '
     <div class="mb-3 mt-3">
         <a href="' . $url . '" class="btn btn-secondary">
-        ' . get_string('client_errors_delete', 'block_trax_xapi_agent') . '
+        ' . get_string('client_errors_delete', 'block_trax_xapi') . '
         </a>
     </div>
 ';
