@@ -369,7 +369,7 @@ This statement is generated from the `\core\event\user_loggedin` Moodle event.
 
 This statement is generated from the `\core\event\user_loggedout` Moodle event.
 
-The statement is similar to the last one, except that the verb is `https://w3id.org/xapi/adl/verbs/logged-in`.
+The statement is similar to the last one, except that the verb is `https://w3id.org/xapi/adl/verbs/logged-out`.
 
 
 #### Logged-in as
