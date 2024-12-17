@@ -41,13 +41,22 @@ class observer {
      * @return void
      */
     public static function catch(\core\event\base $event) {
-        $configs = config::live_event_course_configs();
 
-        // Keep only events from courses where live events are enabled.
-        if (!in_array($event->courseid, array_keys($configs))) {
-            return;
+        if ($event->courseid) {
+            // Course events.
+            $configs = config::live_event_course_configs();
+            if (!in_array($event->courseid, array_keys($configs))) {
+                return;
+            }
+            $config = $configs[$event->courseid];
+
+        } else {
+            // System level events.
+            if (!config::live_system_events_enabled()) {
+                return;
+            }
+            $config = config::system_events_config();
         }
-        $config = $configs[$event->courseid];
         
         // Keep only supported events.
         if (!selector::should_track($event)) {

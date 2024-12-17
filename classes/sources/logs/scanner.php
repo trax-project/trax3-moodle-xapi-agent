@@ -40,9 +40,18 @@ class scanner {
      * @return void
      */
     public static function run() {
-        $configs = config::log_store_course_configs();
+        
+        // First, system level events.
+        $config = config::system_events_config();
+        try {
+            self::scan_course_logs(0, $config);
+            client::flush($config->lrs);
+        } catch (client_exception $e) {
+            return;
+        }
 
-        foreach ($configs as $courseid => $config) {
+        // Now, course events.
+        foreach (config::log_store_course_configs() as $courseid => $config) {
             try {
                 self::scan_course_logs($courseid, $config);
                 client::flush($config->lrs);

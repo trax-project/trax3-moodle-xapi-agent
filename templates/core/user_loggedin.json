@@ -1,0 +1,27 @@
+{
+    "actor": "%user",
+    "verb": {
+        "id": "https://w3id.org/xapi/adl/verbs/logged-in"
+    },
+    "object": {
+        "objectType": "Activity",
+        "id": "%system:iri",
+        "definition": {
+            "type": "https://w3id.org/xapi/vle/activity-types/system"
+        }
+},
+    "context": {
+        "contextActivities": {
+            "category": [
+                {
+                    "id": "https://w3id.org/xapi/vle",
+                    "definition": {
+                        "type": "http://adlnet.gov/expapi/activities/profile"
+                    }
+                }
+            ]
+        },
+        "platform": "Moodle"
+    },
+    "timestamp": "%timestamp"
+}

@@ -212,7 +212,7 @@ Note that the `context.instructor` property is present only when the person who 
 
 This statement is generated from the `\core\event\course_module_completion_updated` Moodle event, when the completion state is voided by this event.
 
-The statement is very similar to the last one, except that the verb is `https://w3id.org/xapi/vle/verbs/voided-completion` and the `result` is not present.
+The statement is similar to the last one, except that the verb is `https://w3id.org/xapi/vle/verbs/voided-completion` and the `result` is not present.
 
 ## Grading
 
@@ -306,17 +306,123 @@ Note that the `context.instructor` property is present only when the person who 
 
 This statement is generated from the `\core\event\user_graded` Moodle event, when a passing grade is defined and when the score is lower than the passing grade.
 
-The statement is very similar to the last one, except that the verb is `https://adlnet.gov/expapi/verbs/passed`.
+The statement is similar to the last one, except that the verb is `https://adlnet.gov/expapi/verbs/passed`.
 
 #### Scored on a course module
 
 This statement is generated from the `\core\event\user_graded` Moodle event, when no passing grade is defined.
 
-The statement is very similar to the last one, except that the verb is `https://adlnet.gov/expapi/verbs/scored` and the result success is not present.
+The statement is similar to the last one, except that the verb is `https://adlnet.gov/expapi/verbs/scored` and the result success is not present.
 
 #### Voided a course module score
 
 This statement is generated from the `\core\event\user_graded` Moodle event, when the final grade is voided by this event.
 
-The statement is very similar to the last one, except that the verb is `https://w3id.org/xapi/vle/verbs/voided-score` and the `result` is not present.
+The statement is similar to the last one, except that the verb is `https://w3id.org/xapi/vle/verbs/voided-score` and the `result` is not present.
 
+
+## Authentication
+
+#### Logged-in
+
+This statement is generated from the `\core\event\user_loggedin` Moodle event.
+
+```json
+{
+    "actor": {
+        "objectType": "Agent",
+        "name": "Learner One",
+        "account": {
+            "name": "learner1",
+            "homePage": "http://my.moodle/username"
+        }
+    },
+    "verb": {
+        "id": "https://w3id.org/xapi/adl/verbs/logged-in"
+    },
+    "object": {
+        "objectType": "Activity",
+        "id": "http://my.moodle",
+        "definition": {
+            "type": "https://w3id.org/xapi/vle/activity-types/system"
+        }
+    },
+    "context": {
+        "contextActivities": {
+            "grouping": [
+                {
+                    "id": "http://my.moodle",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/vle/activity-types/system"
+                    }
+                }
+            ]
+        },
+        "platform": "Moodle"
+    },
+    "timestamp": "2024-11-13T11:59:54+00:00"
+}
+```
+
+
+#### Logged-out
+
+This statement is generated from the `\core\event\user_loggedout` Moodle event.
+
+The statement is similar to the last one, except that the verb is `https://w3id.org/xapi/adl/verbs/logged-in`.
+
+
+#### Logged-in as
+
+This statement is generated from the `\core\event\user_loggedinas` Moodle event.
+
+The statement is similar to the `logged-in` statement, except that an extension is added to the context
+in order to define the user taken by the actor when logging-in.
+So the meaning of this statement is: "the actor logged-in as the user defined in the context".
+
+```json
+{
+    "actor": {
+        "objectType": "Agent",
+        "name": "Admin",
+        "account": {
+            "name": "admin",
+            "homePage": "http://my.moodle/username"
+        }
+    },
+    "verb": {
+        "id": "https://w3id.org/xapi/adl/verbs/logged-in"
+    },
+    "object": {
+        "objectType": "Activity",
+        "id": "http://my.moodle",
+        "definition": {
+            "type": "https://w3id.org/xapi/vle/activity-types/system"
+        }
+    },
+    "context": {
+        "contextActivities": {
+            "grouping": [
+                {
+                    "id": "http://my.moodle",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/vle/activity-types/system"
+                    }
+                }
+            ]
+        },
+        "platform": "Moodle",
+        "extensions": {
+            "https://w3id.org/xapi/vle/extensions/as-user": {
+                "objectType": "Agent",
+                "name": "Learner One",
+                "account": {
+                    "name": "learner1",
+                    "homePage": "http://my.moodle/username"
+                }
+            }
+        }
+    },
+    "timestamp": "2024-11-13T11:59:54+00:00"
+}
+```

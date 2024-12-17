@@ -177,6 +177,30 @@ if ($ADMIN->fulltree) {
         }
     }
     
+    // -------------------- System level events --------------------.
+
+    $settings->add(new admin_setting_heading(
+        'system_events',
+        get_string('system_events', 'block_trax_xapi'),
+        get_string('system_events_help', 'block_trax_xapi')
+    ));
+
+    $settings->add(new admin_setting_configselect(
+        "block_trax_xapi/system_events_lrs",
+        get_string('system_events_lrs', 'block_trax_xapi'),
+        get_string('system_events_lrs_help', 'block_trax_xapi'),
+        config::LRS_NO,
+        config::lrs_options()
+    ));
+
+    $settings->add(new admin_setting_configselect(
+        "block_trax_xapi/system_events_mode",
+        get_string('system_events_mode', 'block_trax_xapi'),
+        get_string('system_events_mode_help', 'block_trax_xapi'),
+        config::EVENTS_MODE_NO,
+        config::events_mode_options()
+    ));
+
     // -------------------- xAPI modeling --------------------.
 
     $settings->add(new admin_setting_heading(

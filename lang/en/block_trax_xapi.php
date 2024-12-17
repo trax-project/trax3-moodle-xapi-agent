@@ -120,8 +120,23 @@ $string['moodle_events_completion_help'] = 'Course modules completion is tracked
 $string['moodle_events_grading'] = 'Grading';
 $string['moodle_events_grading_help'] = 'Course modules grading is tracked with the `scored`, `passed`, `failed` and `voided-score` verbs.';
 
+$string['moodle_events_authentication'] = 'Authentication';
+$string['moodle_events_authentication_help'] = 'Users authentication is tracked with the `logged-in` and `logged-out` verbs.';
+
 $string['moodle_events_h5p'] = 'H5P';
 $string['moodle_events_h5p_help'] = 'H5P xAPI events are tracked. Refer to H5P docs for further details.';
+
+// System events.
+$string['system_events'] = 'System level events';
+$string['system_events_help'] = 'In this section, you can configure the way this plugin catches the system level events.
+    System level events are events generated outside courses, such as authentication events.
+';
+
+$string['system_events_lrs'] = 'LRS';
+$string['system_events_lrs_help'] = '';
+
+$string['system_events_mode'] = 'Events mode';
+$string['system_events_mode_help'] = '';
 
 // xAPI modeling.
 $string['xapi_modeling'] = 'xAPI modeling';

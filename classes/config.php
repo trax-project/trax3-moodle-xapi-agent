@@ -26,6 +26,7 @@ namespace block_trax_xapi;
 
 defined('MOODLE_INTERNAL') || die();
 
+use block_trax_xapi\modelers\events;
 use context_course;
 
 class config {
@@ -356,22 +357,17 @@ class config {
      * @return array
      */
     public static function supported_events($withCustom = false) {
-        $res = [
-            'navigation' => ['\core\event\course_viewed'],
-            'completion' => ['\core\event\course_module_completion_updated'],
-            'grading' => ['\core\event\user_graded'],
-            'h5p' => ['\mod_h5pactivity\event\statement_received'],
-        ];
+        $allEvents = events::list();
         if ($withCustom) {
             foreach (self::supported_custom_events() as $domain => $events) {
-                if (!isset($res[$domain])) {
-                    $res[$domain] = $events;
+                if (!isset($allEvents[$domain])) {
+                    $allEvents[$domain] = $events;
                 } else {
-                    $res[$domain] = array_unique(array_merge($res, $events));
+                    $allEvents[$domain] = array_unique(array_merge($allEvents, $events));
                 }
             }
         }
-        return $res;
+        return $allEvents;
     }
 
     /**
@@ -498,6 +494,38 @@ class config {
         }
 
         return $course_configs;
+    }
+
+    /**
+     * Check if the live events are supported at the system level.
+     *
+     * @return bool
+     */
+    public static function live_system_events_enabled() {
+        return get_config('block_trax_xapi', 'system_events_lrs') != self::LRS_NO
+            && get_config('block_trax_xapi', 'system_events_mode') == self::EVENTS_MODE_LIVE;
+    }
+
+    /**
+     * Check if the logged events are supported at the system level.
+     *
+     * @return bool
+     */
+    public static function logged_system_events_enabled() {
+        return get_config('block_trax_xapi', 'system_events_lrs') != self::LRS_NO
+            && get_config('block_trax_xapi', 'system_events_mode') == self::EVENTS_MODE_LOGS;
+    }
+
+    /**
+     * Return the system level config.
+     *
+     * @return object
+     */
+    public static function system_events_config() {
+        return (object)[
+            'lrs' => get_config('block_trax_xapi', 'system_events_lrs'),
+            'events_mode' => get_config('block_trax_xapi', 'system_events_mode'),
+        ];
     }
 }
 
