@@ -138,6 +138,9 @@ $string['system_events_lrs_help'] = '';
 $string['system_events_mode'] = 'Events mode';
 $string['system_events_mode_help'] = '';
 
+$string['system_events_from'] = 'Logs recorded since';
+$string['system_events_from_help'] = 'Enter a date if you want to collect events from the log store.';
+
 // xAPI modeling.
 $string['xapi_modeling'] = 'xAPI modeling';
 $string['xapi_modeling_help'] = 'In this section, you can define your own xAPI modeling customization.';

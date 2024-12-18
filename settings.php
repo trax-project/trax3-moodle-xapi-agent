@@ -201,6 +201,14 @@ if ($ADMIN->fulltree) {
         config::events_mode_options()
     ));
 
+    $settings->add(new admin_setting_configtext(
+        'block_trax_xapi/system_events_from',
+        get_string('system_events_from', 'block_trax_xapi'),
+        get_string('system_events_from_help', 'block_trax_xapi'),
+        date('d/m/Y', time()),
+        PARAM_TEXT
+    ));
+
     // -------------------- xAPI modeling --------------------.
 
     $settings->add(new admin_setting_heading(

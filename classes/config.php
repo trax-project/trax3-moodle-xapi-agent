@@ -525,6 +525,7 @@ class config {
         return (object)[
             'lrs' => get_config('block_trax_xapi', 'system_events_lrs'),
             'events_mode' => get_config('block_trax_xapi', 'system_events_mode'),
+            'logs_from' => get_config('block_trax_xapi', 'system_events_from'),
         ];
     }
 }
