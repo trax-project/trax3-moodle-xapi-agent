@@ -1,5 +1,9 @@
 # Releases
 
+## 0.4
+
+- New data source: SCORM data coming from the SCORM course modules. 
+
 ## 0.3
 
 - Plugin name changed from `trax_xapi_agent` to `trax_xapi` in order to prevent too long table names

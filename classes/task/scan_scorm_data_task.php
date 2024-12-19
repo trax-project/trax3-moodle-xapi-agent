@@ -22,21 +22,30 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require('../../../config.php');
+namespace block_trax_xapi\task;
 
-require_login();
+defined('MOODLE_INTERNAL') || die();
 
-$courseid = required_param('courseid', PARAM_INT);
-$lrs = required_param('lrs', PARAM_INT);
-$returnurl = required_param('returnurl', PARAM_URL);
+use block_trax_xapi\sources\scorm\scanner;
 
-$transaction = $DB->start_delegated_transaction();
+class scan_scorm_data_task extends \core\task\scheduled_task
+{
+    /**
+     * Return the task's name as shown in admin screens.
+     *
+     * @return string
+     */
+    public function get_name()
+    {
+        return get_string('task_scan_scorm_data', 'block_trax_xapi');
+    }
 
-$DB->delete_records('block_trax_xapi_logs_status', [
-    'courseid' => $courseid,
-    'lrs' => $lrs,
-]);
+    /**
+     * Execute the task.
+     */
+    public function execute()
+    {
+        scanner::run();
+    }
+}
 
-$transaction->allow_commit();
-
-redirect($returnurl);

@@ -32,7 +32,12 @@ $returnurl = required_param('returnurl', PARAM_URL);
 
 $transaction = $DB->start_delegated_transaction();
 
-$DB->delete_records('block_trax_xapi_logs_status', [
+$DB->delete_records('block_trax_xapi_scorm_status', [
+    'courseid' => $courseid,
+    'lrs' => $lrs,
+]);
+
+$DB->delete_records('block_trax_xapi_scos_status', [
     'courseid' => $courseid,
     'lrs' => $lrs,
 ]);

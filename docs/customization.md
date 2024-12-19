@@ -51,7 +51,22 @@ The **TRAX xAPI Agent** plugin supports the following placeholders:
 | %timestamp         | ISO8601 timestamp of the Moodle event                                                                        | `timecreated`                      |
 | %modeler:function  | Result of a custom function provided by the modeler                                                          |                                    |
 
-The last placeholder is a bit special because it does not call a predefined function, but a specific function implemented by the modeler which is using the template. To illustrate the **%modeler:function** modeler, let's take an example:
+SCORM templates have a few additional placeholders:
+
+| Placeholder        | Function                                                                                                    
+| ------------------ | ------------------------------------------------------------------------------------------------------------
+| %scorm:iri         | IRI of the SCORM course module
+| %scorm:name        | xAPI structure representing the name of the SCORM course module
+| %scorm:url         | URL of the SCORM course module
+| %scorm:idnumber    | "*ID number*" of the SCORM course module: optional and arbitrary number defined by the course module author in Moodle
+| %sco:iri           | IRI of the SCO
+| %sco:name          | xAPI structure representing the name of the SCO
+| %success           | `success` property of the `result` section
+| %score             | `score` property of the `result` section
+| %duration          | `duration` property of the `result` section
+
+
+The `%modeler:function` placeholder is a bit special because it does not call a predefined function, but a specific function implemented by the modeler which is using the template. To illustrate the **%modeler:function** modeler, let's take an example:
 
 ```json
 {
@@ -76,9 +91,15 @@ Modelers do basically 2 things:
 - They call a template.
 - They implement specific placeholders required by this template.
 
-The default modelers are located in **/blocks/trax_xapi/classes/modelers**. They are named and organized to reflect the name of Moodle native events. For example, the modeler for the Moodle event named `\core\event\course_viewed` is in the **core/event/course_viewed.php**.
+The default modelers are located in **/blocks/trax_xapi/classes/modelers**.
+Most of them are named and organized to reflect the name of Moodle native events.
+For example, the modeler for the Moodle event named `\core\event\course_viewed` is in the **core/event/course_viewed.php**.
 
-There is only one exception to this rule: the **course_module_viewed.php** modeler which is used for all the `xxx_course_module_viewed` events, where `xxx` is a type of Moodle course module (e.g. `mod_scorm`, `mod_forum`, etc.).
+However, there is one exception to this rule: the **course_module_viewed.php** modeler which is used for all the `xxx_course_module_viewed` events, where `xxx` is a type of Moodle course module (e.g. `mod_scorm`, `mod_forum`, etc.).
+
+SCORM modelers are another exception because they are not associated with Moodle events.
+There are 4 predefined modelers (`sco_laucnhed`, `sco_completed`, `sco_assessed` and `sco_interacted`)
+located in the **/blocks/trax_xapi/classes/modelers/scorm** folder.
 
 But let's come back to the **course_viewed.php** modeler:
 

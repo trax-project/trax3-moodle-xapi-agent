@@ -115,9 +115,9 @@ class scanner {
         }
 
         // Update the status.
-        $lastEvent = end($events);
-        $status->lastevent = $lastEvent->id;
-        $status->timestamp = $lastEvent->timecreated;
+        $last_event = end($events);
+        $status->last_event = $last_event->id;
+        $status->timestamp = time();
         $DB->update_record('block_trax_xapi_logs_status', $status);
 
         // Continue: we got some events so they may be others to process.

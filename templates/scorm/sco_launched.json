@@ -1,0 +1,59 @@
+{
+    "actor": "%user",
+    "verb": {
+        "id": "http://adlnet.gov/expapi/verbs/launched"
+    },
+    "object": {
+        "objectType": "Activity",
+        "id": "%sco:iri",
+        "definition": {
+            "type": "https://w3id.org/xapi/vle/activity-types/sco",
+            "name": "%sco:name"
+        }
+    },
+    "context": {
+        "contextActivities": {
+            "parent": [
+                {
+                    "id": "%scorm:iri",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/tla/activity-types/activity",
+                        "name": "%scorm:name",
+                        "extensions": {
+                            "https://w3id.org/xapi/vle/extensions/component": "%scorm:component",
+                            "https://w3id.org/xapi/vle/extensions/shared-id": "%scorm:idnumber"
+                        }
+                    }
+                }
+            ],
+            "grouping": [
+                {
+                    "id": "%course:iri",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/tla/activity-types/content_set",
+                        "extensions": {
+                            "https://w3id.org/xapi/vle/extensions/component": "course",
+                            "https://w3id.org/xapi/vle/extensions/shared-id": "%course:idnumber"
+                        }
+                    }
+                },
+                {
+                    "id": "%system:iri",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/vle/activity-types/system"
+                    }
+                }
+            ],
+            "category": [
+                {
+                    "id": "https://w3id.org/xapi/vle",
+                    "definition": {
+                        "type": "http://adlnet.gov/expapi/activities/profile"
+                    }
+                }
+            ]
+        },
+        "platform": "Moodle"
+    },
+    "timestamp": "%timestamp"
+}

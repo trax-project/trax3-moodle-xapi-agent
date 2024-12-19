@@ -5,6 +5,7 @@
 Go to the **Site administration > Server > Scheduled tasks** page, enable and configure the following scheduled tasks:
 
 - Scan the log store to create xAPI statements
+- Scan SCORM data to create xAPI statements
 
 ## Plugin configuration
 
@@ -145,4 +146,10 @@ You can choose between:
 - **Events collected from the log store:** statement will be generated from the Moodle logs store (database)
 
 When choosing **Events collected from the log store**, you have to define the date of the first logs to take into account, with the **Logs recorded since** field. 
+
+#### Collect SCORM data
+
+With this option, you can enable the conversion of SCORM data recorded by Moodle.
+
+When enabling SCORM data, you have to define the date of the first attempt to take into account, with the **SCORM attempts since** field. 
 

@@ -44,7 +44,7 @@ class logger {
     const ERROR_LRS = 3;
 
     /**
-     * Log a modeling error.
+     * Log an event modeling error.
      *
      * @param int $lrsnum
      * @param \core\event\base|object $event
@@ -52,7 +52,7 @@ class logger {
      * @param \Exception $e
      * @return void
      */
-    public static function log_modeling_error(int $lrsnum, $event, int $error, \Exception $exception = null) {
+    public static function log_event_modeling_error(int $lrsnum, $event, int $error, \Exception $exception = null) {
         global $DB;
         $DB->insert_record('block_trax_xapi_errors', [
             'lrs' => $lrsnum,
@@ -63,6 +63,32 @@ class logger {
                 'exception' => $exception,
             ]),
             'courseid' => $event->courseid,
+            'timestamp' => time(),
+        ]);
+    }
+
+    /**
+     * Log a scorm modeling error.
+     *
+     * @param int $lrsnum
+     * @param object $attempt
+     * @param string $template
+     * @param int $error
+     * @param \Exception $e
+     * @return void
+     */
+    public static function log_scorm_modeling_error(int $lrsnum, object $attempt, string $template, int $error, \Exception $exception = null) {
+        global $DB;
+        $DB->insert_record('block_trax_xapi_errors', [
+            'lrs' => $lrsnum,
+            'type' => self::ERROR_MODELING,
+            'error' => $error,
+            'data' => json_encode([
+                'attempt' => $attempt,
+                'template' => $template,
+                'exception' => $exception,
+            ]),
+            'courseid' => $attempt->courseid,
             'timestamp' => time(),
         ]);
     }

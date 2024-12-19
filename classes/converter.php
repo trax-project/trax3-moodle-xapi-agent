@@ -70,7 +70,55 @@ class converter {
         $models = array_filter($models, function ($model) use ($lrsnum) {
             // Log the error.
             if ($model->error && $model->error !== modeler::ERROR_IGNORE) {
-                logger::log_modeling_error($lrsnum, $model->event, $model->error, isset($model->exception) ? $model->exception : null);
+                logger::log_event_modeling_error($lrsnum, $model->event, $model->error, isset($model->exception) ? $model->exception : null);
+            }
+            return !$model->error;
+        });
+
+        // Keep only the statements, not the errors.
+        $statements = array_map(function ($statement) {
+            return $statement->statement;
+        }, $models);
+
+        // Keys were preserved so we rearrange the keys.
+        return array_values($statements);
+    }
+
+    /**
+     * Process a list of SCORM attempts.
+     *
+     * @param array $attempts
+     * @param string $template
+     * @param int $lrsnum
+     * @return array
+     */
+    public static function convert_scorm_attempts(array $attempts, string $template, int $lrsnum) {
+        
+        // Statements modeling.
+        $models = array_map(function ($attempt) use ($template) {
+
+            // Determine the modeler name.
+            $modelerName = '\scorm\\sco_' . $template;
+
+            // Find the modeler class.
+            $modelerClass = '';
+            if (config::custom_modelers_namespace()) {
+                // Custom modeler class.
+                $modelerClass = config::custom_modelers_namespace() . $modelerName;
+            }
+            if (empty($modelerClass) || !class_exists($modelerClass)) {
+                // Default modeler class.
+                $modelerClass = '\block_trax_xapi\modelers' . $modelerName;
+            }
+
+            return (new $modelerClass)->statement($attempt);
+        }, $attempts);
+
+        // Filter the statements because the modelers may return errors.
+        $models = array_filter($models, function ($model) use ($lrsnum, $template) {
+            // Log the error.
+            if ($model->error && $model->error !== modeler::ERROR_IGNORE) {
+                logger::log_scorm_modeling_error($lrsnum, $model->attempt, $template, $model->error, isset($model->exception) ? $model->exception : null);
             }
             return !$model->error;
         });

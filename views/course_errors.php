@@ -113,7 +113,6 @@ echo '
 ';
 
 // Return link.
-
 echo '<div class="backlink mt-5">' . html_writer::link($returnurl, get_string('back')) . '</div>';
 
 echo $OUTPUT->footer();

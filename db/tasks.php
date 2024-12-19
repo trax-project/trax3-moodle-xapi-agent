@@ -34,6 +34,16 @@ $tasks = array(
         'month' => '*',
         'dayofweek' => '*',
         'disabled' => 0
-    )
+    ),
+    array(
+        'classname' => '\block_trax_xapi\task\scan_scorm_data_task',
+        'blocking' => 0,
+        'minute' => '*/5',
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+        'disabled' => 0
+    ),
 );
 

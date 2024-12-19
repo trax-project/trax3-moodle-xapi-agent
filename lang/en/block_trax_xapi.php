@@ -32,6 +32,10 @@ $string['block_settings'] = 'xAPI settings for this course';
 // Privacy.
 $string['privacy:metadata'] = 'The TRAX xAPI Agent plugin does not store any personal data about any user.';
 
+// Common.
+$string['yes'] = 'Yes';
+$string['no'] = 'No';
+
 // LRS configuration.
 $string['lrs_settings'] = 'Production LRS';
 $string['lrs_settings_help'] = "The following settings should be found in your LRS.
@@ -74,10 +78,18 @@ $string['events_mode_live'] = 'Events catched in real time';
 $string['events_mode_logs'] = 'Events collected from the log store';
 $string['logs_from'] = 'Logs recorded since';
 
+// SCORM options.
+$string['collect_scorm_data'] = 'Collect SCORM data';
+$string['scorm_from'] = 'SCORM attempts since';
+
 // Show events mode in course.
 $string['course_events_mode_0'] = 'Events are <b>not catched</b> in this course.';
 $string['course_events_mode_1'] = 'Events are catched in <b>real time</b>.';
 $string['course_events_mode_2'] = 'Events are collected from the <b>log store</b> since the {$a}.';
+
+// Show scorm data collection in course.
+$string['course_scorm_enabled_0'] = 'SCORM data is <b>not collected</b> from this course.';
+$string['course_scorm_enabled_1'] = 'SCORM data is collected from the <b>SCORM activities</b> since the {$a}.';
 
 // Actors identification.
 $string['actors_id'] = 'Actors identification';
@@ -121,7 +133,9 @@ $string['moodle_events_grading'] = 'Grading';
 $string['moodle_events_grading_help'] = 'Course modules grading is tracked with the `scored`, `passed`, `failed` and `voided-score` verbs.';
 
 $string['moodle_events_authentication'] = 'Authentication';
-$string['moodle_events_authentication_help'] = 'Users authentication is tracked with the `logged-in` and `logged-out` verbs.';
+$string['moodle_events_authentication_help'] = 'Users authentication is tracked with the `logged-in` and `logged-out` verbs.
+    System level events must be enabled.
+';
 
 $string['moodle_events_h5p'] = 'H5P';
 $string['moodle_events_h5p_help'] = 'H5P xAPI events are tracked. Refer to H5P docs for further details.';
@@ -157,9 +171,14 @@ $string['custom_modelers_namespace'] = 'Custom modelers namespace';
 $string['custom_modelers_namespace_help'] = 'You can use a custom namespace (typically `local_trax_xapi\modelers`) to provide your own xAPI modelers.';
 
 // Log store.
-$string['logs_status_never_run'] = 'This course will be scanned from the begining during the next CRON job.';
-$string['logs_status_last_run'] = 'This course has been scanned on the {$a} for the last time.';
-$string['logs_status_replay'] = 'Rescan from the {$a}.';
+$string['logs_status_never_run'] = 'Logs from this course will be scanned for the first time during the next CRON job.';
+$string['logs_status_last_run'] = 'Logs from this course has been scanned on the {$a} for the last time.';
+$string['scorm_status_replay'] = 'Rescan from the begining';
+
+// SCORM data.
+$string['scorm_status_never_run'] = 'SCORM data from this course will be scanned for the first time during the next CRON job.';
+$string['scorm_status_last_run'] = 'SCORM data from this course has been scanned on the {$a} for the last time.';
+$string['scorm_status_replay'] = 'Rescan from the begining';
 
 // Exceptions.
 $string['exception_template_context'] = 'TRAX xAPI Agent: we were not able to retrieve the context refered in a template.';
@@ -188,3 +207,4 @@ $string['event'] = 'Event';
 
 // Tasks.
 $string['task_scan_log_store'] = 'Scan the log store to create xAPI statements';
+$string['task_scan_scorm_data'] = 'Scan SCORM data to create xAPI statements';

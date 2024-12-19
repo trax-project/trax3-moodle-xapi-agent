@@ -60,6 +60,21 @@ class block_trax_xapi_edit_form extends block_edit_form {
         $mform->setDefault('config_logs_from', date('d/m/Y', time()));
         $mform->setType('config_logs_from', PARAM_TEXT);
         $mform->hideIf('config_logs_from', 'config_events_mode', 'neq', config::EVENTS_MODE_LOGS);
+
+        // SCORM data.
+        $mform->addElement('select', 'config_scorm_enabled',
+            get_string('collect_scorm_data', 'block_trax_xapi'),
+            config::scorm_enabled_options()
+        );
+        $mform->setDefault('config_scorm_enabled', config::SCORM_DISABLED);
+
+        // From date (logs)
+        $mform->addElement('text', 'config_scorm_from',
+            get_string('scorm_from', 'block_trax_xapi')
+        );
+        $mform->setDefault('config_scorm_from', date('d/m/Y', time()));
+        $mform->setType('config_scorm_from', PARAM_TEXT);
+        $mform->hideIf('config_scorm_from', 'config_scorm_enabled', 'eq', config::SCORM_DISABLED);
     }
 
     /**

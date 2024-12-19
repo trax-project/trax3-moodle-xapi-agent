@@ -35,14 +35,24 @@ class activities {
     // TODO Cache the courses, course modules, modules, module instances.
 
     /**
+     * Get course.
+     *
+     * @param int $mid
+     * @return object
+     */
+    public function get_course(int $mid) {
+        global $DB;
+        return $DB->get_record('course', ['id' => $mid], '*', MUST_EXIST);
+    }
+
+    /**
      * Get course props.
      *
      * @param int $mid
      * @return object
      */
-    public function get_course_props(int $mid) {
-        global $DB;
-        $course = $DB->get_record('course', ['id' => $mid], '*', MUST_EXIST);
+    public function get_course_props(int $mid, $course = null) {
+        $course = isset($course) ? $course : $this->get_course($mid);
 
         return (object)[
             'iri' => $this->iri($mid, 'course'),
@@ -54,15 +64,15 @@ class activities {
     }
 
     /**
-     * Get module props.
+     * Get course module props.
      *
      * @param int $mid
      * @return object
      */
-    public function get_course_module_props(int $mid) {
+    public function get_course_module_props(int $mid, $course = null) {
         global $DB;
         $course_module = $DB->get_record('course_modules', ['id' => $mid], '*', MUST_EXIST);
-        $course = $DB->get_record('course', ['id' => $course_module->course], '*', MUST_EXIST);
+        $course = isset($course) ? $course : $this->get_course($course_module->course);
         $module = $DB->get_record('modules', ['id' => $course_module->module], '*', MUST_EXIST);
         $instance = $DB->get_record($module->name, ['id' => $course_module->instance], '*', MUST_EXIST);
         $component = 'mod_' . $module->name;
@@ -73,6 +83,46 @@ class activities {
             'component' => $component,
             'url' => (new moodle_url("/mod/$module->name/view.php", ['id' => $course_module->id]))->__toString(),
             'idnumber' => empty($course_module->idnumber) ? null : $course_module->idnumber,
+        ];
+    }
+
+    /**
+     * Get SCORM module props.
+     *
+     * @param int $mid
+     * @param object $course
+     * @return object
+     */
+    public function get_scorm_props(int $mid, $course) {
+        global $DB;
+        $instance = $DB->get_record('scorm', ['id' => $mid], '*', MUST_EXIST);
+        $module = $DB->get_record('modules', ['name' => 'scorm'], '*', MUST_EXIST);
+        $course_module = $DB->get_record('course_modules', ['instance' => $instance->id, 'module' => $module->id], '*', MUST_EXIST);
+        $component = 'mod_scorm';
+
+        return (object)[
+            'iri' => $this->iri($course_module->id, $component),
+            'name' => utils::lang_string($instance->name, $course),
+            'component' => $component,
+            'url' => (new moodle_url("/mod/$module->name/view.php", ['id' => $course_module->id]))->__toString(),
+            'idnumber' => empty($course_module->idnumber) ? null : $course_module->idnumber,
+        ];
+    }
+
+    /**
+     * Get SCO props.
+     *
+     * @param int $mid
+     * @param object $course
+     * @return object
+     */
+    public function get_sco_props(int $mid, $course) {
+        global $DB;
+        $sco = $DB->get_record('scorm_scoes', ['id' => $mid], '*', MUST_EXIST);
+
+        return (object)[
+            'iri' => config::activities_id_base() . '/xapi/activities/mod_scorm/scos/' . $mid,
+            'name' => utils::lang_string($sco->title, $course),
         ];
     }
 
@@ -126,10 +176,6 @@ class activities {
      * @return string
      */
     public function iri(int $mid, string $type) {
-        $base = config::activities_id_base();
-        if (substr($base, -1) !== '/') {
-            $base .= '/';
-        }
-        return $base . 'xapi/activities/' . $type . '/' . $mid;
+        return config::activities_id_base() . '/xapi/activities/' . $type . '/' . $mid;
     }
 }

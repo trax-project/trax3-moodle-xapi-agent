@@ -504,3 +504,246 @@ So the meaning of this statement is: "the actor logged-in as the user defined in
     "timestamp": "2024-11-13T11:59:54+00:00"
 }
 ```
+
+
+## SCORM
+
+#### Launched
+
+This statement is generated from SCORM data recorded by Moodle.
+
+```json
+{
+    "actor": {
+        "objectType": "Agent",
+        "name": "Learner One",
+        "account": {
+            "name": "learner1",
+            "homePage": "http://my.moodle/username"
+        }
+    },
+    "verb": {
+        "id": "http://adlnet.gov/expapi/verbs/launched"
+    },
+    "object": {
+        "objectType": "Activity",
+        "id": "http://my.moodle/xapi/activities/mod_scorm/scos/4",
+        "definition": {
+            "type": "https://w3id.org/xapi/vle/activity-types/sco",
+            "name": {
+                "en": "iSpring 9 Quiz"
+            }
+        }
+    },
+    "context": {
+        "contextActivities": {
+            "parent": [
+                {
+                    "id": "http://my.moodle/xapi/activities/mod_scorm/5",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/tla/activity-types/activity",
+                        "name": {
+                            "en": "iSpring Quiz"
+                        },
+                        "extensions": {
+                            "https://w3id.org/xapi/vle/extensions/component": "mod_scorm"
+                        }
+                    }
+                }
+            ],
+            "grouping": [
+                {
+                    "id": "http://my.moodle/xapi/activities/course/2",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/tla/activity-types/content_set",
+                        "extensions": {
+                            "https://w3id.org/xapi/vle/extensions/component": "course"
+                        }
+                    }
+                },
+                {
+                    "id": "http://my.moodle",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/vle/activity-types/system"
+                    }
+                }
+            ],
+            "category": [
+                {
+                    "id": "https://w3id.org/xapi/vle",
+                    "definition": {
+                        "type": "http://adlnet.gov/expapi/activities/profile"
+                    }
+                }
+            ]
+        },
+        "platform": "Moodle"
+    },
+    "timestamp": "2024-11-13T11:59:54+00:00"
+}
+```
+
+#### Completed
+
+This statement is generated from SCORM data recorded by Moodle.
+
+```json
+{
+    "actor": {
+        "objectType": "Agent",
+        "name": "Learner One",
+        "account": {
+            "name": "learner1",
+            "homePage": "http://my.moodle/username"
+        }
+    },
+    "verb": {
+        "id": "http://adlnet.gov/expapi/verbs/completed"
+    },
+    "object": {
+        "objectType": "Activity",
+        "id": "http://my.moodle/xapi/activities/mod_scorm/scos/4",
+        "definition": {
+            "type": "https://w3id.org/xapi/vle/activity-types/sco",
+            "name": {
+                "en": "iSpring 9 Quiz"
+            }
+        }
+    },
+    "result": {
+        "completion": true,
+        "duration": "PT11S"
+    },
+    "context": {
+        "contextActivities": {
+            "parent": [
+                {
+                    "id": "http://my.moodle/xapi/activities/mod_scorm/5",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/tla/activity-types/activity",
+                        "name": {
+                            "en": "iSpring Quiz"
+                        },
+                        "extensions": {
+                            "https://w3id.org/xapi/vle/extensions/component": "mod_scorm"
+                        }
+                    }
+                }
+            ],
+            "grouping": [
+                {
+                    "id": "http://my.moodle/xapi/activities/course/2",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/tla/activity-types/content_set",
+                        "extensions": {
+                            "https://w3id.org/xapi/vle/extensions/component": "course"
+                        }
+                    }
+                },
+                {
+                    "id": "http://my.moodle",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/vle/activity-types/system"
+                    }
+                }
+            ],
+            "category": [
+                {
+                    "id": "https://w3id.org/xapi/vle",
+                    "definition": {
+                        "type": "http://adlnet.gov/expapi/activities/profile"
+                    }
+                }
+            ]
+        },
+        "platform": "Moodle"
+    },
+    "timestamp": "2024-11-13T11:59:54+00:00"
+}
+```
+
+#### Passed / Failed
+
+This statement is generated from SCORM data recorded by Moodle.
+
+```json
+{
+    "actor": {
+        "objectType": "Agent",
+        "name": "Learner One",
+        "account": {
+            "name": "learner1",
+            "homePage": "http://my.moodle/username"
+        }
+    },
+    "verb": {
+        "id": "http://adlnet.gov/expapi/verbs/passed"
+    },
+    "object": {
+        "objectType": "Activity",
+        "id": "http://my.moodle/xapi/activities/mod_scorm/scos/4",
+        "definition": {
+            "type": "https://w3id.org/xapi/vle/activity-types/sco",
+            "name": {
+                "en": "iSpring 9 Quiz"
+            }
+        }
+    },
+    "result": {
+        "completion": true,
+        "success": true,
+        "score": {
+            "max": 100,
+            "min": 0,
+            "raw": 100,
+            "scaled": 1
+        },
+        "duration": "PT11S"
+    },
+    "context": {
+        "contextActivities": {
+            "parent": [
+                {
+                    "id": "http://my.moodle/xapi/activities/mod_scorm/5",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/tla/activity-types/activity",
+                        "name": {
+                            "en": "iSpring Quiz"
+                        },
+                        "extensions": {
+                            "https://w3id.org/xapi/vle/extensions/component": "mod_scorm"
+                        }
+                    }
+                }
+            ],
+            "grouping": [
+                {
+                    "id": "http://my.moodle/xapi/activities/course/2",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/tla/activity-types/content_set",
+                        "extensions": {
+                            "https://w3id.org/xapi/vle/extensions/component": "course"
+                        }
+                    }
+                },
+                {
+                    "id": "http://my.moodle",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/vle/activity-types/system"
+                    }
+                }
+            ],
+            "category": [
+                {
+                    "id": "https://w3id.org/xapi/vle",
+                    "definition": {
+                        "type": "http://adlnet.gov/expapi/activities/profile"
+                    }
+                }
+            ]
+        },
+        "platform": "Moodle"
+    },
+    "timestamp": "2024-11-13T11:59:54+00:00"
+}
+```

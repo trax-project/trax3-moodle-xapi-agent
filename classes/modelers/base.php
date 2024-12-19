@@ -140,19 +140,8 @@ abstract class base {
             return (object)['error' => self::ERROR_IGNORE, 'event' => $event];
         }
 
-        // Find the template file.
-        $templatePath = '';
-        if (config::custom_templates_folder()) {
-            // Custom template file.
-            $templatePath = config::custom_templates_folder() . $template . '.json';
-        }
-        if (empty($templatePath) || !file_exists($templatePath)) {
-            // Default template file.
-            $templatePath = __DIR__ . '/../../templates/' . $template . '.json';
-        }
-
         // Open the template.
-        if (!$content = file_get_contents($templatePath)) {
+        if (!$content = $this->templateContents($template)) {
             return (object)['error' => self::ERROR_FILE, 'event' => $event];
         }
 
@@ -174,12 +163,33 @@ abstract class base {
     }
 
     /**
-     * Get the JSON template.
+     * Get the JSON template location.
      *
      * @return string|false
      */
     protected function template() {
         return false;
+    }
+
+    /**
+     * Get the JSON template content.
+     *
+     * @param string $template
+     * @return string|false
+     */
+    protected function templateContents(string $template) {
+        $templatePath = '';
+        if (config::custom_templates_folder()) {
+            // Custom template file.
+            $templatePath = config::custom_templates_folder() . $template . '.json';
+        }
+        if (empty($templatePath) || !file_exists($templatePath)) {
+            // Default template file.
+            $templatePath = __DIR__ . '/../../templates/' . $template . '.json';
+        }
+
+        // Open the template.
+        return file_get_contents($templatePath);
     }
 
     /**

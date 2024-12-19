@@ -82,6 +82,21 @@ class config {
     const ACTORS_ID_EMAIL = 4;
 
     /**
+     * Is SCORM source enabled?
+     */
+    const SCORM_DISABLED = 0;
+    const SCORM_ENABLED = 1;
+
+    /**
+     * SCORM status.
+     */
+    const SCORM_STATUS_LAUNCHED = 1;
+    const SCORM_STATUS_COMPLETED = 2;
+    const SCORM_STATUS_ASSESSED = 3;
+    const SCORM_STATUS_INTERACTED = 4;
+    
+    
+    /**
      * Get the production LRS endpoint without trailing slash.
      *
      * @return string
@@ -298,15 +313,19 @@ class config {
     }
 
     /**
-     * Get the actor id homepage without trailing slash.
+     * Get the activity id without trailing slash.
      *
      * @return string
      */
     public static function activities_id_base() {
-        return rtrim(
+        $id = rtrim(
             get_config('block_trax_xapi', 'activities_id_base'),
             "/ \n\r\t\v\x00"
         );
+        if (substr($id, -1) == '/') {
+            $id = substr_replace($id, '', -1);
+        }
+        return $id;
     }
 
     /**
@@ -425,6 +444,18 @@ class config {
     }
 
     /**
+     * Get the SCORM enabled options.
+     *
+     * @return array
+     */
+    public static function scorm_enabled_options() {
+        return [
+            self::SCORM_ENABLED => get_string('yes', 'block_trax_xapi'),
+            self::SCORM_DISABLED => get_string('no', 'block_trax_xapi'),
+        ];
+    }
+
+    /**
      * Get a course config.
      *
      * @param int $courseid
@@ -447,7 +478,7 @@ class config {
      * @return array
      */
     public static function live_event_course_configs() {
-        return self::course_configs(self::EVENTS_MODE_LIVE);
+        return self::course_configs_by_event_mode(self::EVENTS_MODE_LIVE);
     }
 
     /**
@@ -456,7 +487,7 @@ class config {
      * @return array
      */
     public static function log_store_course_configs() {
-        return self::course_configs(self::EVENTS_MODE_LOGS);
+        return self::course_configs_by_event_mode(self::EVENTS_MODE_LOGS);
     }
 
     /**
@@ -465,7 +496,7 @@ class config {
      * @param int $event_mode
      * @return array
      */
-    public static function course_configs(int $event_mode) {
+    public static function course_configs_by_event_mode(int $event_mode) {
         global $DB;
         
         // Get all the TRAX xAPI blocks and there configs.
@@ -479,6 +510,41 @@ class config {
                 && self::lrs_configured($config->lrs)
                 && !empty($config->events_mode)
                 && $config->events_mode == $event_mode
+            ) {
+                $configs_by_context_ids[$block_instance_record->parentcontextid] = $config;
+            }
+        }
+
+        // Get all the contexts.
+        $contexts = $DB->get_records_list('context', 'id', array_keys($configs_by_context_ids));
+
+        // Now, fill the course configs.
+        $course_configs = [];
+        foreach ($contexts as $context) {
+            $course_configs[$context->instanceid] = $configs_by_context_ids[$context->id];
+        }
+
+        return $course_configs;
+    }
+
+    /**
+     * Get the index of course configs for SCORM.
+     *
+     * @return array
+     */
+    public static function scorm_course_configs() {
+        global $DB;
+        
+        // Get all the TRAX xAPI blocks and there configs.
+        $block_instance_records = $DB->get_records('block_instances', ['blockname' => 'trax_xapi']);
+
+        // Extract all the configs indexed by their context IDs.
+        $configs_by_context_ids = [];
+        foreach ($block_instance_records as $block_instance_record) {
+            $config = block_instance('trax_xapi', $block_instance_record)->config;
+            if (!empty($config->lrs)
+                && self::lrs_configured($config->lrs)
+                && !empty($config->scorm_enabled)
             ) {
                 $configs_by_context_ids[$block_instance_record->parentcontextid] = $config;
             }

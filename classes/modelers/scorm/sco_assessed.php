@@ -22,21 +22,27 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require('../../../config.php');
+namespace block_trax_xapi\modelers\scorm;
 
-require_login();
+defined('MOODLE_INTERNAL') || die();
 
-$courseid = required_param('courseid', PARAM_INT);
-$lrs = required_param('lrs', PARAM_INT);
-$returnurl = required_param('returnurl', PARAM_URL);
+class sco_assessed extends base {
 
-$transaction = $DB->start_delegated_transaction();
-
-$DB->delete_records('block_trax_xapi_logs_status', [
-    'courseid' => $courseid,
-    'lrs' => $lrs,
-]);
-
-$transaction->allow_commit();
-
-redirect($returnurl);
+    /**
+     * Get the JSON template.
+     *
+     * @return string|false
+     */
+    protected function template() {
+        return 'scorm/sco_assessed';
+    }
+    
+    /**
+     * @return string|null
+     */
+    protected function verb() {
+        return $this->attempt->values['cmi.success_status'] == 'passed'
+            ? 'http://adlnet.gov/expapi/verbs/passed'
+            : 'http://adlnet.gov/expapi/verbs/failed';
+    }
+}
