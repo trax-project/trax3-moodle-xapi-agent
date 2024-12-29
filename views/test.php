@@ -22,18 +22,27 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use block_trax_xapi\sources\scorm\scanner;
+use block_trax_xapi\config;
+use block_trax_xapi\sources\logs\scanner as LogsScanner;
+use block_trax_xapi\sources\scorm\scanner as ScormScanner;
 
 require('../../../config.php');
 require_once($CFG->libdir . '/tablelib.php');
-
 require_login();
+
+if (!is_siteadmin()) {
+    throw new \Exception('This page is accessible only to the site administrator.');
+}
+if (!config::dev_tools_enabled()) {
+    throw new \Exception('You must enable dev tools in the TRAX xAPI plugin in order to access this page.');
+}
 
 // URL params.
 
 $courseid = required_param('courseid', PARAM_INT);
 $lrs = required_param('lrs', PARAM_INT);
 $returnurl = required_param('returnurl', PARAM_URL);
+$test = optional_param('test', '', PARAM_TEXT);
 
 // Page setup.
 
@@ -64,11 +73,27 @@ echo $OUTPUT->header();
 
 // Content.
 
-echo '<p>No test :(</p>';
+if (empty($test)) {
+    echo '<p>No test running.</p>';
+}
 
-scanner::run();
+if ($test == 'logs') {
+    echo '<p>Running logs scanner...</p>';
+    LogsScanner::run();
+    echo '<p>Done!</p>';
+}
 
-// Return link.
-echo '<div class="backlink mt-5">' . html_writer::link($returnurl, get_string('back')) . '</div>';
+if ($test == 'scorm') {
+    echo '<p>Running SCORM scanner...</p>';
+    ScormScanner::run();
+    echo '<p>Done!</p>';
+}
+
+// Links.
+echo "<div class='mt-5'>
+    <a class='btn btn-secondary' href='$baseurl&test=logs'>Run logs scanner</a>
+    <a class='btn btn-secondary ml-1' href='$baseurl&test=scorm'>Run SCORM scanner</a>
+    <a class='btn btn-primary ml-1' href='$returnurl'>Go back to course</a>
+</div>";
 
 echo $OUTPUT->footer();

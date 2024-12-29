@@ -106,6 +106,11 @@ class scanner {
             return selector::should_track($event);
         });
 
+        // No more filtered event for this couorse.
+        if (count($filtered_events) == 0) {
+            return;
+        }
+
         // Convert the events.
         $statements = converter::convert_events($filtered_events, $config->lrs);
 
@@ -116,7 +121,7 @@ class scanner {
 
         // Update the status.
         $last_event = end($events);
-        $status->last_event = $last_event->id;
+        $status->lastevent = $last_event->id;
         $status->timestamp = time();
         $DB->update_record('block_trax_xapi_logs_status', $status);
 

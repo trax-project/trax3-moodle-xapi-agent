@@ -156,24 +156,22 @@ $string['system_events_from'] = 'Logs recorded since';
 $string['system_events_from_help'] = 'Enter a date if you want to collect events from the log store.';
 
 // xAPI modeling.
-$string['xapi_modeling'] = 'xAPI modeling';
-$string['xapi_modeling_help'] = 'In this section, you can define your own xAPI modeling customization.';
+$string['dev_tools'] = 'Development';
+$string['dev_tools_help'] = 'In this section, you can define a few options for developers.';
 
-$string['custom_plugin'] = 'Customization plugin';
-$string['custom_plugin_help'] = "The customization plugin must be a local plugin, located in the './local' folder, following the
+$string['custom_plugin'] = 'Custom xAPI modeling plugin';
+$string['custom_plugin_help'] = "The plugin must be a local plugin, located in the './local' folder, following the
 <a href='https://github.com/trax-project/trax3-moodle-xapi-agent/blob/master/docs/customization.md' target='_blank'>customization guidelines</a>.
 Please, enter its name without the 'local_' prefix.";
 
-$string['custom_templates_folder'] = 'Custom templates folder';
-$string['custom_templates_folder_help'] = 'You can use a custom folder (typically `local/trax_xapi/templates`) to provide your own xAPI templates.';
-
-$string['custom_modelers_namespace'] = 'Custom modelers namespace';
-$string['custom_modelers_namespace_help'] = 'You can use a custom namespace (typically `local_trax_xapi\modelers`) to provide your own xAPI modelers.';
+// Dev tools.
+$string['all_dev_tools'] = 'Dev tool';
+$string['all_dev_tools_help'] = 'Currently, this consists in giving access to a test page from the xAPI block (site admin only).';
 
 // Log store.
 $string['logs_status_never_run'] = 'Logs from this course will be scanned for the first time during the next CRON job.';
 $string['logs_status_last_run'] = 'Logs from this course has been scanned on the {$a} for the last time.';
-$string['scorm_status_replay'] = 'Rescan from the begining';
+$string['logs_status_replay'] = 'Rescan from the begining';
 
 // SCORM data.
 $string['scorm_status_never_run'] = 'SCORM data from this course will be scanned for the first time during the next CRON job.';

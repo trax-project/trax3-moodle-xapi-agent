@@ -114,16 +114,45 @@ If you want to transform Moodle events into xAPI statements, you should select t
 
 - **Grading:** a statement is generated every time a user validates a grade on a course module. By default, the `scored`, `passed` and `failed` verbs are used. When a teacher manually removes a grade, a statement with the `voided-grade` verb is generated. 
 
+- **Authentication:** a statement is generated every time a user logs-in or logs-out of the Moodle platform. By default, the `looged-in` and `logged-out` verbs are used.
+
 - **H5P:** all the H5P statements are captured and improved. Check-out the [H5P](./h5p.md) documentation page. 
 
 If you want to get more details about the generated statements, you should refer to the [xAPI profile](./xapi-profile.md) associated with this plugin.
 
 If you don't want to apply this profile and prefer defining your own statements, read the next paragraph.
 
-#### xAPI modeling
 
-By default, this plugin conforms with an [xAPI profile](./xapi-profile.md) which defines all the generated statements. However, you are free to define your own statements. In order to do this, you need to implement *templates* and *modelers* in a local plugin, following the [customization guidelines](./customization.md).
+#### System level events
+
+In order to track events which do not come from a course (e.g. authentication events), you must configure the following options.
+
+**LRS:**
+
+- **No LRS:** no xAPI statement will be generated.
+- **Production LRS:** statement will be sent to the production LRS.
+- **Test LRS:** statement will be sent to the test LRS, if you configured it.
+
+**Events mode:**
+
+- **Events not catched:** no xAPI statement will be generated from Moodle events.
+- **Events catched in real time:** statement will be generated from real time Moodle events.
+- **Events collected from the log store:** statement will be generated from the Moodle logs store (database)
+
+When choosing **Events collected from the log store**, you have to define the date of the first logs to take into account, with the **Logs recorded since** field. 
+
+
+#### Development
+
+**Custom xAPI modeling plugin**
+
+By default, the TRAX xAPI Agent plugin conforms with an [xAPI profile](./xapi-profile.md) which defines all the generated statements. However, you are free to define your own statements. In order to do this, you need to implement *templates* and *modelers* in a local plugin, following the [customization guidelines](./customization.md).
 By default, this local plugin is named **trax_xapi_custom**, but you are free to change it in the **Customization plugin**.
+
+**Dev tools**
+
+Currently, this consists in giving access to a test page from the xAPI block (site admin only).
+
 
 ## Course block
 

@@ -81,7 +81,11 @@ class user_graded extends modeler {
             return;
         }
         
-        $this->gradeitem = $DB->get_record('grade_items', ['id' => $this->event_other['itemid']], '*', MUST_EXIST);
+        try {
+            $this->gradeitem = $DB->get_record('grade_items', ['id' => $this->event_other['itemid']], '*', MUST_EXIST);
+        } catch (\Exception $e) {
+            throw new ignore_event_exception('Grade item not found.');
+        }
 
         // Check that it is an activity grade.
         if ($this->gradeitem->itemtype !== 'mod') {
@@ -94,8 +98,12 @@ class user_graded extends modeler {
         }
 
         // Get the module instance.
-        $module = $DB->get_record('modules', ['name' => $this->gradeitem->itemmodule], '*', MUST_EXIST);
-        $course_module = $DB->get_record('course_modules', ['module' => $module->id, 'instance' => $this->gradeitem->iteminstance], '*', MUST_EXIST);
+        try {
+            $module = $DB->get_record('modules', ['name' => $this->gradeitem->itemmodule], '*', MUST_EXIST);
+            $course_module = $DB->get_record('course_modules', ['module' => $module->id, 'instance' => $this->gradeitem->iteminstance], '*', MUST_EXIST);
+        } catch (\Exception $e) {
+            throw new ignore_event_exception('Course module not found.');
+        }
 
         $this->gradeitem_props = repo::activities()->get_course_module_props($course_module->id);
     }

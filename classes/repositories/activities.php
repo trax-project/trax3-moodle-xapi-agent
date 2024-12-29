@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use block_trax_xapi\config;
 use block_trax_xapi\utils;
+use block_trax_xapi\exceptions\ignore_event_exception;
 use moodle_url;
 
 class activities {
@@ -42,7 +43,11 @@ class activities {
      */
     public function get_course(int $mid) {
         global $DB;
-        return $DB->get_record('course', ['id' => $mid], '*', MUST_EXIST);
+        try {
+            return $DB->get_record('course', ['id' => $mid], '*', MUST_EXIST);
+        } catch (\Exception $e) {
+            throw new ignore_event_exception('Course not found.');
+        }
     }
 
     /**
@@ -71,11 +76,15 @@ class activities {
      */
     public function get_course_module_props(int $mid, $course = null) {
         global $DB;
-        $course_module = $DB->get_record('course_modules', ['id' => $mid], '*', MUST_EXIST);
-        $course = isset($course) ? $course : $this->get_course($course_module->course);
-        $module = $DB->get_record('modules', ['id' => $course_module->module], '*', MUST_EXIST);
-        $instance = $DB->get_record($module->name, ['id' => $course_module->instance], '*', MUST_EXIST);
-        $component = 'mod_' . $module->name;
+        try {
+            $course_module = $DB->get_record('course_modules', ['id' => $mid], '*', MUST_EXIST);
+            $course = isset($course) ? $course : $this->get_course($course_module->course);
+            $module = $DB->get_record('modules', ['id' => $course_module->module], '*', MUST_EXIST);
+            $instance = $DB->get_record($module->name, ['id' => $course_module->instance], '*', MUST_EXIST);
+            $component = 'mod_' . $module->name;
+        } catch (\Exception $e) {
+            throw new ignore_event_exception('Course module not found.');
+        }
 
         return (object)[
             'iri' => $this->iri($mid, $component),
@@ -95,10 +104,14 @@ class activities {
      */
     public function get_scorm_props(int $mid, $course) {
         global $DB;
-        $instance = $DB->get_record('scorm', ['id' => $mid], '*', MUST_EXIST);
-        $module = $DB->get_record('modules', ['name' => 'scorm'], '*', MUST_EXIST);
-        $course_module = $DB->get_record('course_modules', ['instance' => $instance->id, 'module' => $module->id], '*', MUST_EXIST);
-        $component = 'mod_scorm';
+        try {
+            $instance = $DB->get_record('scorm', ['id' => $mid], '*', MUST_EXIST);
+            $module = $DB->get_record('modules', ['name' => 'scorm'], '*', MUST_EXIST);
+            $course_module = $DB->get_record('course_modules', ['instance' => $instance->id, 'module' => $module->id], '*', MUST_EXIST);
+            $component = 'mod_scorm';
+        } catch (\Exception $e) {
+            throw new ignore_event_exception('SCORM course module not found.');
+        }
 
         return (object)[
             'iri' => $this->iri($course_module->id, $component),
@@ -118,7 +131,11 @@ class activities {
      */
     public function get_sco_props(int $mid, $course) {
         global $DB;
-        $sco = $DB->get_record('scorm_scoes', ['id' => $mid], '*', MUST_EXIST);
+        try {
+            $sco = $DB->get_record('scorm_scoes', ['id' => $mid], '*', MUST_EXIST);
+        } catch (\Exception $e) {
+            throw new ignore_event_exception('SCO not found.');
+        }
 
         return (object)[
             'iri' => config::activities_id_base() . '/xapi/activities/mod_scorm/scos/' . $mid,
@@ -146,7 +163,11 @@ class activities {
      */
     public function get_context_props(int $mid) {
         global $DB;
-        $context = $DB->get_record('context', ['id' => $mid], '*', MUST_EXIST);
+        try {
+            $context = $DB->get_record('context', ['id' => $mid], '*', MUST_EXIST);
+        } catch (\Exception $e) {
+            throw new ignore_event_exception('Context not found.');
+        }
         if ($context->contextlevel == 80) {
             // Block.
         }

@@ -594,6 +594,15 @@ class config {
             'logs_from' => get_config('block_trax_xapi', 'system_events_from'),
         ];
     }
+
+    /**
+     * Are the dev tools enabled?
+     *
+     * @return bool
+     */
+    public static function dev_tools_enabled() {
+        return get_config('block_trax_xapi', 'dev_tools');
+    }
 }
 
 

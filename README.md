@@ -12,19 +12,19 @@ Open the Moodle administration page and confirm the installation of the plugin.
 
 ## Configuration
 
-Please, check the [configuration](./docs/configuration.md) page to see how to configure this plugin, including:
-
-- Global plugin configuration
-- Configuration for each Moodle course
-- CRON jobs configuration
+Please, check the [configuration](./docs/configuration.md) page to see how to configure this plugin.
 
 ## xAPI profile
 
 This plugin generates statements conforming with this [VLE xAPI profile](./docs/xapi-profile.md).
 
-## H5P
+## Data sources
 
-This plugin supports [H5P xAPI statements](./docs/h5p.md) which are adapted to be consistent with the **VLE xAPI profile**.
+This plugin supports several data sources:
+
+- Moodle events & logs
+- SCORM data
+- H5P statements (check-out [this page](./docs/h5p.md))
 
 ## Customization
 

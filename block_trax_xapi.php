@@ -188,14 +188,14 @@ class block_trax_xapi extends block_base {
         }
 
         // Test.
-        if (is_siteadmin()) {
+        if (is_siteadmin() && config::dev_tools_enabled()) {
             $this->content->text .= '<p class="">
-                <a href=" ' . new moodle_url("/blocks/trax_xapi/views/test.php", [
+                <a class="btn btn-secondary" href=" ' . new moodle_url("/blocks/trax_xapi/views/test.php", [
                     'courseid' => $COURSE->id,
                     'lrs' => $this->config->lrs,
                     'returnurl' => $this->page->url->__toString()
                 ]) . '
-                " class="">Test page for site admin (dev) ></a>
+                " class="">Dev test</a>
             </p>';
         }
 

@@ -209,15 +209,14 @@ if ($ADMIN->fulltree) {
         PARAM_TEXT
     ));
 
-    // -------------------- xAPI modeling --------------------.
+    // -------------------- Dev --------------------.
 
     $settings->add(new admin_setting_heading(
-        'xapi_modeling',
-        get_string('xapi_modeling', 'block_trax_xapi'),
-        get_string('xapi_modeling_help', 'block_trax_xapi')
+        'dev_tools',
+        get_string('dev_tools', 'block_trax_xapi'),
+        get_string('dev_tools_help', 'block_trax_xapi')
     ));
 
-    // Customization plugin.
     $settings->add(new admin_setting_configtext(
         'block_trax_xapi/custom_plugin',
         get_string('custom_plugin', 'block_trax_xapi'),
@@ -225,4 +224,12 @@ if ($ADMIN->fulltree) {
         'trax_xapi_custom',
         PARAM_TEXT
     ));
+
+    $settings->add(new admin_setting_configcheckbox(
+        'block_trax_xapi/dev_tools',
+        get_string('all_dev_tools', 'block_trax_xapi'),
+        get_string('all_dev_tools_help', 'block_trax_xapi'),
+        1
+    ));
+
 }

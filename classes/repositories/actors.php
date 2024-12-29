@@ -31,7 +31,7 @@ use core_user;
 
 require_once($CFG->dirroot.'/user/profile/lib.php');
 
-class actors extends repository {
+class actors {
 
     /**
      * DB table.
@@ -85,7 +85,7 @@ class actors extends repository {
         }
         
         if (is_null($xapi) && config::actors_id_with_uuid()) {
-            $entry = $this->get_or_create_db_entry($mid, 'user');
+            $entry = $this->get_or_create_actor($mid, 'user');
             $xapi = [
                 'objectType' => 'Agent',
                 'account' => [
@@ -107,5 +107,29 @@ class actors extends repository {
         }
 
         return $xapi;
+    }
+
+    /**
+     * Get an actor, or create it if it does not exist.
+     *
+     * @param int $mid Moodle ID of the item
+     * @param string $type Type of item
+     * @return \stdClass
+     */
+    protected function get_or_create_actor(int $mid, string $type) {
+        global $DB;
+        $entry = $DB->get_record($this->table, [
+            'mid' => $mid,
+            'type' => $type,
+        ]);
+        if (!$entry) {
+            $entry = (object)[
+                'mid' => $mid,
+                'type' => $type,
+                'uuid' => utils::uuid(),
+            ];
+            $entry->id = $DB->insert_record($this->table, $entry);
+        }
+        return $entry;
     }
 }

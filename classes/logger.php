@@ -54,12 +54,15 @@ class logger {
      */
     public static function log_event_modeling_error(int $lrsnum, $event, int $error, \Exception $exception = null) {
         global $DB;
+
+        $data = get_class($event) == 'stdClass' ? $event : $event->get_data();
+
         $DB->insert_record('block_trax_xapi_errors', [
             'lrs' => $lrsnum,
             'type' => self::ERROR_MODELING,
             'error' => $error,
             'data' => json_encode([
-                'event' => $event->get_data(),
+                'event' => $data,
                 'exception' => $exception,
             ]),
             'courseid' => $event->courseid,

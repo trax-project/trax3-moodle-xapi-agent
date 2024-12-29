@@ -508,9 +508,10 @@ So the meaning of this statement is: "the actor logged-in as the user defined in
 
 ## SCORM
 
-#### Launched
+The following statements are generated directly from the SCORM data recorded by Moodle in its database.
 
-This statement is generated from SCORM data recorded by Moodle.
+
+#### Launched
 
 ```json
 {
@@ -584,8 +585,6 @@ This statement is generated from SCORM data recorded by Moodle.
 ```
 
 #### Completed
-
-This statement is generated from SCORM data recorded by Moodle.
 
 ```json
 {
@@ -663,8 +662,6 @@ This statement is generated from SCORM data recorded by Moodle.
 ```
 
 #### Passed / Failed
-
-This statement is generated from SCORM data recorded by Moodle.
 
 ```json
 {
