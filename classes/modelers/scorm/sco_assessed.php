@@ -41,8 +41,12 @@ class sco_assessed extends base {
      * @return string|null
      */
     protected function verb() {
-        return $this->attempt->values['cmi.success_status'] == 'passed'
-            ? 'http://adlnet.gov/expapi/verbs/passed'
-            : 'http://adlnet.gov/expapi/verbs/failed';
+        if (isset($this->attempt->values['cmi.success_status']) && $this->attempt->values['cmi.success_status'] == 'passed') {    // SCORM 2004
+            return 'http://adlnet.gov/expapi/verbs/passed';
+        }
+        if (isset($this->attempt->values['cmi.core.lesson_status']) && $this->attempt->values['cmi.core.lesson_status'] == 'passed') {      // SCORM 1.2
+            return 'http://adlnet.gov/expapi/verbs/passed';
+        }
+        return 'http://adlnet.gov/expapi/verbs/failed';
     }
 }

@@ -49,6 +49,7 @@ class observer {
                 return;
             }
             $config = $configs[$event->courseid];
+            $courseid = $event->courseid;
 
         } else {
             // System level events.
@@ -56,6 +57,7 @@ class observer {
                 return;
             }
             $config = config::system_events_config();
+            $courseid = 0;
         }
         
         // Keep only supported events.
@@ -64,7 +66,7 @@ class observer {
         }
 
         // Convert the events.
-        $statements = converter::convert_events([$event], $config->lrs);
+        $statements = converter::convert_events([$event], $config->lrs, $courseid);
 
         // Send the statements.
         if (count($statements) > 0) {

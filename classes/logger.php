@@ -44,54 +44,33 @@ class logger {
     const ERROR_LRS = 3;
 
     /**
-     * Log an event modeling error.
+     * Log a modeling error.
      *
+     * @param string $type
      * @param int $lrsnum
-     * @param \core\event\base|object $event
-     * @param int $error
-     * @param \Exception $e
-     * @return void
-     */
-    public static function log_event_modeling_error(int $lrsnum, $event, int $error, \Exception $exception = null) {
-        global $DB;
-
-        $data = get_class($event) == 'stdClass' ? $event : $event->get_data();
-
-        $DB->insert_record('block_trax_xapi_errors', [
-            'lrs' => $lrsnum,
-            'type' => self::ERROR_MODELING,
-            'error' => $error,
-            'data' => json_encode([
-                'event' => $data,
-                'exception' => $exception,
-            ]),
-            'courseid' => $event->courseid,
-            'timestamp' => time(),
-        ]);
-    }
-
-    /**
-     * Log a scorm modeling error.
-     *
-     * @param int $lrsnum
-     * @param object $attempt
+     * @param int $courseid
+     * @param \core\event\base|object $source
      * @param string $template
      * @param int $error
      * @param \Exception $e
      * @return void
      */
-    public static function log_scorm_modeling_error(int $lrsnum, object $attempt, string $template, int $error, \Exception $exception = null) {
+    public static function log_modeling_error(string $type, int $lrsnum, int $courseid, object $source, string $template, int $error, \Exception $exception = null) {
         global $DB;
+
+        $source = get_class($source) == 'stdClass' ? $source : $source->get_data();
+        
         $DB->insert_record('block_trax_xapi_errors', [
             'lrs' => $lrsnum,
             'type' => self::ERROR_MODELING,
             'error' => $error,
             'data' => json_encode([
-                'attempt' => $attempt,
+                'type' => $type,
                 'template' => $template,
+                'source' => $source,
                 'exception' => $exception,
             ]),
-            'courseid' => $attempt->courseid,
+            'courseid' => $courseid,
             'timestamp' => time(),
         ]);
     }

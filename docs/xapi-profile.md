@@ -744,3 +744,93 @@ The following statements are generated directly from the SCORM data recorded by 
     "timestamp": "2024-11-13T11:59:54+00:00"
 }
 ```
+
+
+#### Responded
+
+```json
+{
+    "actor": {
+        "objectType": "Agent",
+        "name": "Learner One",
+        "account": {
+            "name": "learner1",
+            "homePage": "http://my.moodle/username"
+        }
+    },
+    "verb": {
+        "id": "http://adlnet.gov/expapi/verbs/responded"
+    },
+    "object": {
+        "objectType": "Activity",
+        "id": "http://my.moodle/xapi/activities/mod_scorm/scos/4/interactions/0",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
+            "name": {
+                "en": "Question 1"
+            },
+            "interactionType": "choice"
+        }
+    },
+    "result": {
+        "response": "option_1",
+        "success": true,
+        "duration": "PT11S"
+    },
+    "context": {
+        "contextActivities": {
+            "parent": [
+                {
+                    "objectType": "Activity",
+                    "id": "http://my.moodle/xapi/activities/mod_scorm/scos/4",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/vle/activity-types/sco",
+                        "name": {
+                            "en": "iSpring 9 Quiz"
+                        }
+                    }
+                }
+            ],
+            "grouping": [
+                {
+                    "id": "http://my.moodle/xapi/activities/mod_scorm/5",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/tla/activity-types/activity",
+                        "name": {
+                            "en": "iSpring Quiz"
+                        },
+                        "extensions": {
+                            "https://w3id.org/xapi/vle/extensions/component": "mod_scorm"
+                        }
+                    }
+                },
+                {
+                    "id": "http://my.moodle/xapi/activities/course/2",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/tla/activity-types/content_set",
+                        "extensions": {
+                            "https://w3id.org/xapi/vle/extensions/component": "course"
+                        }
+                    }
+                },
+                {
+                    "id": "http://my.moodle",
+                    "definition": {
+                        "type": "https://w3id.org/xapi/vle/activity-types/system"
+                    }
+                }
+            ],
+            "category": [
+                {
+                    "id": "https://w3id.org/xapi/vle",
+                    "definition": {
+                        "type": "http://adlnet.gov/expapi/activities/profile"
+                    }
+                }
+            ]
+        },
+        "platform": "Moodle"
+    },
+    "timestamp": "2024-11-13T11:59:54+00:00"
+}
+```

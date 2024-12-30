@@ -62,37 +62,38 @@ abstract class base extends modeler {
     /**
      * Get an xAPI statement, given a SCORM attempt.
      *
-     * @param object $attempt
-     * @return array
+     * @param object $data
+     * @param mixed $optdata
+     * @return object
      */
-    public function statement($attempt) {
-        $this->attempt = $attempt;
+    public function statement($data, $optdata = null) {
+        $this->attempt = $data;
 
         // Get the right template.
         if (!$template = $this->template()) {
-            return (object)['error' => self::ERROR_IGNORE, 'attempt' => $attempt];
+            return (object)['error' => self::ERROR_IGNORE, 'source' => $data, 'template' => null];
         }
 
         // Open the template.
         if (!$content = $this->templateContents($template)) {
-            return (object)['error' => self::ERROR_FILE, 'attempt' => $attempt];
+            return (object)['error' => self::ERROR_TEMPLATE_FILE, 'source' => $data, 'template' => $template];
         }
 
         // Parse the JSON.
         if (!$json = json_decode($content, true)) {
-            return (object)['error' => self::ERROR_JSON, 'attempt' => $attempt];
+            return (object)['error' => self::ERROR_TEMPLATE_JSON, 'source' => $data, 'template' => $template];
         }
 
         // Fill placeholders.
         try {
             $statement = $this->fill_placeholders($json);
         } catch (ignore_event_exception $e) {
-            return (object)['error' => self::ERROR_IGNORE, 'attempt' => $attempt];
+            return (object)['error' => self::ERROR_IGNORE, 'source' => $data, 'template' => $template];
         } catch (\Exception $e) {
-            return (object)['error' => self::ERROR_PLACEHOLDER, 'attempt' => $attempt, 'exception' => $e];
+            return (object)['error' => self::ERROR_PLACEHOLDER, 'source' => $data, 'template' => $template, 'exception' => $e];
         }
 
-        return (object)['error' => self::ERROR_NO, 'attempt' => $attempt, 'statement' => $statement];
+        return (object)['error' => self::ERROR_NO, 'source' => $data, 'template' => $template, 'statement' => $statement];
     }
 
     /**
@@ -195,19 +196,23 @@ abstract class base extends modeler {
      * @return string|null
      */
     protected function success() {
-        return $this->attempt->values['cmi.success_status'] == 'passed'
-            ? true
-            : false;
+        return (isset($this->attempt->values['cmi.success_status']) && $this->attempt->values['cmi.success_status'] == 'passed')    // SCORM 2004
+            || (isset($this->attempt->values['cmi.core.lesson_status']) && $this->attempt->values['cmi.core.lesson_status'] == 'passed');     // SCORM 1.2
     }
     
     /**
      * @return string|null
      */
     protected function score() {
-        if (!isset($this->attempt->values['cmi.score.raw']) && !isset($this->attempt->values['cmi.score.scaled'])) {
+        if (!isset($this->attempt->values['cmi.score.raw'])
+            && !isset($this->attempt->values['cmi.score.scaled'])
+            && !isset($this->attempt->values['cmi.core.score.raw'])
+            && !isset($this->attempt->values['cmi.core.score.scaled'])
+        ) {
             return null;
         }
         $score = [];
+        // SCORM 2004.
         if (isset($this->attempt->values['cmi.score.raw'])) {
             $score['raw'] = (int) $this->attempt->values['cmi.score.raw'];
         }
@@ -220,6 +225,19 @@ abstract class base extends modeler {
         if (isset($this->attempt->values['cmi.score.scaled'])) {
             $score['scaled'] = (float) $this->attempt->values['cmi.score.scaled'];
         }
+        // SCORM 1.2.
+        if (isset($this->attempt->values['cmi.core.score.raw'])) {
+            $score['raw'] = (int) $this->attempt->values['cmi.core.score.raw'];
+        }
+        if (isset($this->attempt->values['cmi.core.score.min'])) {
+            $score['min'] = (int) $this->attempt->values['cmi.core.score.min'];
+        }
+        if (isset($this->attempt->values['cmi.core.score.max'])) {
+            $score['max'] = (int) $this->attempt->values['cmi.core.score.max'];
+        }
+        if (isset($this->attempt->values['cmi.core.score.scaled'])) {
+            $score['scaled'] = (float) $this->attempt->values['cmi.core.score.scaled'];
+        }
         return $score;
     }
     
@@ -227,8 +245,13 @@ abstract class base extends modeler {
      * @return string|null
      */
     protected function duration() {
+        // SCORM 2004.
         if (isset($this->attempt->values['cmi.total_time'])) {
             return $this->attempt->values['cmi.total_time'];
+        }
+        // SCORM 1.2.
+        if (isset($this->attempt->values['cmi.core.total_time'])) {
+            return utils::iso8601_duration_from_scorm12($this->attempt->values['cmi.core.total_time']);
         }
         return null;
     }

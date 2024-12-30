@@ -44,19 +44,24 @@ abstract class base {
     const ERROR_IGNORE = 1;
 
     /**
+     * Modeler file error.
+     */
+    const ERROR_MODELER_FILE = 2;
+
+    /**
      * Template file error.
      */
-    const ERROR_FILE = 2;
+    const ERROR_TEMPLATE_FILE = 3;
 
     /**
      * Template JSON parsing error.
      */
-    const ERROR_JSON = 3;
+    const ERROR_TEMPLATE_JSON = 4;
 
     /**
      * Template JSON parsing error.
      */
-    const ERROR_PLACEHOLDER = 4;
+    const ERROR_PLACEHOLDER = 5;
 
     /**
      * @var \core\event\base|object $event
@@ -114,9 +119,10 @@ abstract class base {
      * Get an xAPI statement, given a Moodle event.
      *
      * @param \core\event\base|object $event
-     * @return array
+     * @param mixed $optdata
+     * @return object
      */
-    public function statement($event) {
+    public function statement($event, $optdata = null) {
         $this->event = $event;
 
         // Prepare the event other which must be an array.
@@ -137,29 +143,29 @@ abstract class base {
 
         // Get the right template.
         if (!$template = $this->template()) {
-            return (object)['error' => self::ERROR_IGNORE, 'event' => $event];
+            return (object)['error' => self::ERROR_IGNORE, 'source' => $event, 'template' => null];
         }
 
         // Open the template.
         if (!$content = $this->templateContents($template)) {
-            return (object)['error' => self::ERROR_FILE, 'event' => $event];
+            return (object)['error' => self::ERROR_TEMPLATE_FILE, 'source' => $event, 'template' => $template];
         }
 
         // Parse the JSON.
         if (!$json = json_decode($content, true)) {
-            return (object)['error' => self::ERROR_JSON, 'event' => $event];
+            return (object)['error' => self::ERROR_TEMPLATE_JSON, 'source' => $event, 'template' => $template];
         }
 
         // Fill placeholders.
         try {
             $statement = $this->fill_placeholders($json);
         } catch (ignore_event_exception $e) {
-            return (object)['error' => self::ERROR_IGNORE, 'event' => $event];
+            return (object)['error' => self::ERROR_IGNORE, 'source' => $event, 'template' => $template];
         } catch (\Exception $e) {
-            return (object)['error' => self::ERROR_PLACEHOLDER, 'event' => $event, 'exception' => $e];
+            return (object)['error' => self::ERROR_PLACEHOLDER, 'source' => $event, 'template' => $template, 'exception' => $e];
         }
 
-        return (object)['error' => self::ERROR_NO, 'event' => $event, 'statement' => $statement];
+        return (object)['error' => self::ERROR_NO, 'source' => $event, 'template' => $template, 'statement' => $statement];
     }
 
     /**

@@ -36,12 +36,13 @@ class converter {
      *
      * @param array $events
      * @param int $lrsnum
+     * @param int $courseid
      * @return array
      */
-    public static function convert_events(array $events, int $lrsnum) {
+    public static function convert_events(array $events, int $lrsnum, int $courseid) {
         
         // Statements modeling.
-        $models = array_map(function ($event) {
+        $feedbacks = array_map(function ($event) {
             // TODO we should store all the modeler instances in a cache.
 
             // Determine the modeler name.
@@ -51,82 +52,100 @@ class converter {
             } else {
                 $modelerName = $event->eventname;
             }
+            return self::statement($modelerName, $event);
 
-            // Find the modeler class.
-            $modelerClass = '';
-            if (config::custom_modelers_namespace()) {
-                // Custom modeler class.
-                $modelerClass = config::custom_modelers_namespace() . $modelerName;
-            }
-            if (empty($modelerClass) || !class_exists($modelerClass)) {
-                // Default modeler class.
-                $modelerClass = '\block_trax_xapi\modelers' . $modelerName;
-            }
-
-            return (new $modelerClass)->statement($event);
         }, $events);
 
-        // Filter the statements because the modelers may return errors.
-        $models = array_filter($models, function ($model) use ($lrsnum) {
-            // Log the error.
-            if ($model->error && $model->error !== modeler::ERROR_IGNORE) {
-                logger::log_event_modeling_error($lrsnum, $model->event, $model->error, isset($model->exception) ? $model->exception : null);
-            }
-            return !$model->error;
-        });
-
-        // Keep only the statements, not the errors.
-        $statements = array_map(function ($statement) {
-            return $statement->statement;
-        }, $models);
-
-        // Keys were preserved so we rearrange the keys.
-        return array_values($statements);
+        return self::finalStatements($feedbacks, 'event', $lrsnum, $courseid);
     }
 
     /**
      * Process a list of SCORM attempts.
      *
      * @param array $attempts
-     * @param string $template
+     * @param string $event
      * @param int $lrsnum
+     * @param int $courseid
      * @return array
      */
-    public static function convert_scorm_attempts(array $attempts, string $template, int $lrsnum) {
+    public static function convert_scorm_attempts(array $attempts, string $event, int $lrsnum, int $courseid) {
         
         // Statements modeling.
-        $models = array_map(function ($attempt) use ($template) {
-
-            // Determine the modeler name.
-            $modelerName = '\scorm\\sco_' . $template;
-
-            // Find the modeler class.
-            $modelerClass = '';
-            if (config::custom_modelers_namespace()) {
-                // Custom modeler class.
-                $modelerClass = config::custom_modelers_namespace() . $modelerName;
-            }
-            if (empty($modelerClass) || !class_exists($modelerClass)) {
-                // Default modeler class.
-                $modelerClass = '\block_trax_xapi\modelers' . $modelerName;
-            }
-
-            return (new $modelerClass)->statement($attempt);
+        $feedbacks = array_map(function ($attempt) use ($event) {
+            return self::statement('\scorm\\sco_' . $event, $attempt);
         }, $attempts);
 
+        return self::finalStatements($feedbacks, 'scorm_attempt', $lrsnum, $courseid);
+    }
+
+    /**
+     * Process a list of SCORM interactions.
+     *
+     * @param object $attempt
+     * @param array $interactions
+     * @param string $template
+     * @param int $lrsnum
+     * @param int $courseid
+     * @return array
+     */
+    public static function convert_scorm_interactions(object $attempt, array $interactions, int $lrsnum, int $courseid) {
+        
+        // Statements modeling.
+        $feedbacks = array_map(function ($interaction) use ($attempt) {
+            return self::statement('\scorm\\sco_interacted', $attempt, $interaction);
+        }, $interactions);
+
+        return self::finalStatements($feedbacks, 'scorm_interaction', $lrsnum, $courseid);
+    }
+
+    /**
+     * Process a list of SCORM interactions.
+     *
+     * @param string $modelerName
+     * @param \core\event\base|object $data
+     * @param mixed $optdata
+     * @return object
+     */
+    protected static function statement(string $modelerName, $data, $optdata = null) {
+        $modelerClass = '';
+        if (config::custom_modelers_namespace()) {
+            // Custom modeler class.
+            $modelerClass = config::custom_modelers_namespace() . $modelerName;
+        }
+        if (empty($modelerClass) || !class_exists($modelerClass)) {
+            // Default modeler class.
+            $modelerClass = '\block_trax_xapi\modelers' . $modelerName;
+        }
+        $modeler = new $modelerClass;
+        if (!class_exists($modelerClass)) {
+            return (object)['error' => $modeler::ERROR_MODELER_FILE, 'data' => $data];
+        }
+        return (new $modelerClass)->statement($data, $optdata);
+    }
+
+    /**
+     * Get the final list of statements.
+     *
+     * @param array $feedbacks
+     * @param string $type
+     * @param int $lrsnum
+     * @param int $courseid
+     * @return array
+     */
+    protected static function finalStatements(array $feedbacks, string $type, int $lrsnum, int $courseid) {
         // Filter the statements because the modelers may return errors.
-        $models = array_filter($models, function ($model) use ($lrsnum, $template) {
+        $feedbacks = array_filter($feedbacks, function ($feedback) use ($type, $lrsnum, $courseid) {
             // Log the error.
-            if ($model->error && $model->error !== modeler::ERROR_IGNORE) {
-                logger::log_scorm_modeling_error($lrsnum, $model->attempt, $template, $model->error, isset($model->exception) ? $model->exception : null);
+            if ($feedback->error && $feedback->error !== modeler::ERROR_IGNORE) {
+                logger::log_modeling_error($type, $lrsnum, $courseid, $feedback->source, $feedback->template, $feedback->error, isset($feedback->exception) ? $feedback->exception : null);
             }
-            return !$model->error;
+            return !$feedback->error;
         });
 
         // Keep only the statements, not the errors.
         $statements = array_map(function ($statement) {
             return $statement->statement;
-        }, $models);
+        }, $feedbacks);
 
         // Keys were preserved so we rearrange the keys.
         return array_values($statements);

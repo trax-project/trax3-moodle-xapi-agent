@@ -112,7 +112,7 @@ class scanner {
         }
 
         // Convert the events.
-        $statements = converter::convert_events($filtered_events, $config->lrs);
+        $statements = converter::convert_events($filtered_events, $config->lrs, $courseid);
 
         // Send the statements.
         if (count($statements) > 0) {

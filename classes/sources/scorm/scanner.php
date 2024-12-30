@@ -76,6 +76,7 @@ class scanner {
         self::process_launched_data($courseid, $config, $status);
         self::process_completed_data($courseid, $config, $status);
         self::process_assessed_data($courseid, $config, $status);
+        self::process_interacted_data($courseid, $config, $status);
     }
 
     /**
@@ -121,7 +122,7 @@ class scanner {
         }
 
         // Convert the attemps.
-        $statements = converter::convert_scorm_attempts($attempts, 'launched', $config->lrs);
+        $statements = converter::convert_scorm_attempts($attempts, 'launched', $config->lrs, $courseid);
 
         // Send the statements.
         if (count($statements) > 0) {
@@ -180,7 +181,9 @@ class scanner {
             LEFT JOIN {block_trax_xapi_scos_status} status ON attempts.scoid = status.scoid AND attempts.attemptid = status.attemptid AND status.lrs = :lrs
             WHERE scorm.course = :courseid
                 AND (elt.element = 'cmi.completion_status'
+                    OR elt.element = 'cmi.core.lesson_status'
                     OR elt.element = 'cmi.total_time'
+                    OR elt.element = 'cmi.core.total_time'
                 )
                 AND attempts.timemodified > :from
                 AND status.status = :status
@@ -193,7 +196,12 @@ class scanner {
         ]);
 
         $attempts = array_filter(self::attempts_from_records($records), function ($attempt) {
-            return isset($attempt->values['cmi.completion_status']) && $attempt->values['cmi.completion_status'] == 'completed';
+            return (isset($attempt->values['cmi.completion_status']) && $attempt->values['cmi.completion_status'] == 'completed'  // SCORM 2004
+                ) || (isset($attempt->values['cmi.core.lesson_status']) && (                  // SCORM 1.2
+                    $attempt->values['cmi.core.lesson_status'] == 'completed'
+                    || $attempt->values['cmi.core.lesson_status'] == 'passed'
+                    || $attempt->values['cmi.core.lesson_status'] == 'failed'
+            ));
         });
         
         if (empty($attempts)) {
@@ -201,7 +209,7 @@ class scanner {
         }
 
         // Convert the attemps.
-        $statements = converter::convert_scorm_attempts($attempts, 'completed', $config->lrs);
+        $statements = converter::convert_scorm_attempts($attempts, 'completed', $config->lrs, $courseid);
 
         // Send the statements.
         if (count($statements) > 0) {
@@ -268,11 +276,17 @@ class scanner {
             LEFT JOIN {block_trax_xapi_scos_status} status ON attempts.scoid = status.scoid AND attempts.attemptid = status.attemptid AND status.lrs = :lrs
             WHERE scorm.course = :courseid
                 AND (elt.element = 'cmi.success_status'
+                    OR elt.element = 'cmi.core.lesson_status'
                     OR elt.element = 'cmi.score.min'
                     OR elt.element = 'cmi.score.max'
                     OR elt.element = 'cmi.score.raw'
                     OR elt.element = 'cmi.score.scaled'
+                    OR elt.element = 'cmi.core.score.min'
+                    OR elt.element = 'cmi.core.score.max'
+                    OR elt.element = 'cmi.core.score.raw'
+                    OR elt.element = 'cmi.core.score.scaled'
                     OR elt.element = 'cmi.total_time'
+                    OR elt.element = 'cmi.core.total_time'
                 )
                 AND attempts.timemodified > :from
                 AND status.status = :status
@@ -285,9 +299,13 @@ class scanner {
         ]);
 
         $attempts = array_filter(self::attempts_from_records($records), function ($attempt) {
-            return isset($attempt->values['cmi.success_status']) && (
-                $attempt->values['cmi.success_status'] == 'passed' || $attempt->values['cmi.success_status'] == 'failed'
-            );
+            return (isset($attempt->values['cmi.success_status']) && (                // SCORM 2004
+                $attempt->values['cmi.success_status'] == 'passed'
+                || $attempt->values['cmi.success_status'] == 'failed'
+            )) || (isset($attempt->values['cmi.core.lesson_status']) && (                  // SCORM 1.2
+                $attempt->values['cmi.core.lesson_status'] == 'passed'
+                || $attempt->values['cmi.core.lesson_status'] == 'failed'
+            ));
         });
         
         if (empty($attempts)) {
@@ -295,7 +313,7 @@ class scanner {
         }
 
         // Convert the attemps.
-        $statements = converter::convert_scorm_attempts($attempts, 'assessed', $config->lrs);
+        $statements = converter::convert_scorm_attempts($attempts, 'assessed', $config->lrs, $courseid);
 
         // Send the statements.
         if (count($statements) > 0) {
@@ -331,6 +349,150 @@ class scanner {
         $DB->insert_records('block_trax_xapi_scos_status', $records);
 
         $transaction->allow_commit();
+    }
+
+    /**
+     * Process the interactions from SCORM attempts.
+     *
+     * @param int $courseid
+     * @param object $config
+     * @param object $status
+     * @return void
+     */
+    protected static function process_interacted_data(int $courseid, object $config, object $status) {
+        global $DB;
+
+        // Defined the starting timestamp.
+        $from = max(
+            $status->interactedtimestamp,
+            strtotime(\DateTime::createFromFormat('d/m/Y', $config->scorm_from)->format('d-m-Y'))
+        );
+
+        // Get the course SCOs.
+        $records = $DB->get_records_sql("
+            SELECT attempts.id, att.userid, attempts.attemptid, scorm.course as courseid, scorm.id as scormid, scoes.id as scoid, status.id as statusid,
+                elt.element, attempts.value, attempts.timemodified as timestamp
+            FROM {scorm} scorm
+            JOIN {scorm_scoes} scoes ON scoes.scorm = scorm.id
+            JOIN {scorm_scoes_value} attempts ON attempts.scoid = scoes.id
+            JOIN {scorm_element} elt ON attempts.elementid = elt.id
+            JOIN {scorm_attempt} att ON attempts.attemptid = att.id
+            LEFT JOIN {block_trax_xapi_scos_status} status ON attempts.scoid = status.scoid AND attempts.attemptid = status.attemptid AND status.lrs = :lrs
+            WHERE scorm.course = :courseid
+                AND (elt.element = 'cmi.success_status'
+                    OR elt.element = 'cmi.core.lesson_status'
+                )
+                AND attempts.timemodified > :from
+                AND status.status = :status
+            ORDER BY attempts.timemodified ASC
+        ", [
+            'lrs' => $config->lrs,
+            'courseid' => $courseid,
+            'from' => $from,
+            'status' => config::SCORM_STATUS_ASSESSED,
+        ]);
+
+        $attempts = array_filter(self::attempts_from_records($records), function ($attempt) {
+            return (isset($attempt->values['cmi.success_status']) && (                // SCORM 2004
+                $attempt->values['cmi.success_status'] == 'passed'
+                || $attempt->values['cmi.success_status'] == 'failed'
+            )) || (isset($attempt->values['cmi.core.lesson_status']) && (                  // SCORM 1.2
+                $attempt->values['cmi.core.lesson_status'] == 'passed'
+                || $attempt->values['cmi.core.lesson_status'] == 'failed'
+            ));
+        });
+
+        if (empty($attempts)) {
+            return;
+        }
+
+        // Convert the attemps.
+        $statements = [];
+        foreach ($attempts as $attempt) {
+            $statements = array_merge($statements,
+                self::interaction_statements($attempt, $courseid, $config)
+            );
+        }
+
+        // Send the statements.
+        if (count($statements) > 0) {
+            client::send($config->lrs, $statements);
+        }
+
+        $transaction = $DB->start_delegated_transaction();
+
+        // Update the SCORM status.
+        $last_record = end($attempts);
+        $status->interactedtimestamp = $last_record->timestamp;
+        $status->timestamp = time();
+        $DB->update_record('block_trax_xapi_scorm_status', $status);
+
+        // Delete the SCOs status.
+        $ids = array_map(function ($attempt) {
+            return $attempt->statusid;
+        }, $attempts);
+
+        $DB->delete_records_select('block_trax_xapi_scos_status', 'id IN (' . implode(',', $ids) . ')');
+
+        // Insert the new SCOs status.
+        $records = array_map(function ($attempt) use ($config, $courseid) {
+            return (object)[
+                'courseid' => $courseid,
+                'lrs' => $config->lrs,
+                'attemptid' => $attempt->attemptid,
+                'scoid' => $attempt->scoid,
+                'status' => config::SCORM_STATUS_INTERACTED,
+            ];
+        }, $attempts);
+
+        $DB->insert_records('block_trax_xapi_scos_status', $records);
+
+        $transaction->allow_commit();
+    }
+
+    /**
+     * @param object $attempt
+     * @param object $config
+     * @return array
+     */
+    protected static function interaction_statements(object $attempt, int $courseid, object $config): array {
+        global $DB;
+
+        // Get the attempt values.
+        $records = $DB->get_records_sql("
+            SELECT val.id, val.value, elt.element
+            FROM {scorm_scoes_value} val
+            JOIN {scorm_element} elt ON val.elementid = elt.id
+            WHERE val.scoid = :scoid
+                AND val.attemptid = :attemptid
+        ", [
+            'scoid' => $attempt->scoid,
+            'attemptid' => $attempt->attemptid,
+        ]);
+
+        // Extract interactions.
+        $interactions = [];
+        foreach ($records as $record) {
+            $parts = explode('.', $record->element);
+            if (substr($parts[1], 0, 12) != 'interactions') {
+                continue;
+            }
+            if ($parts[1] == 'interactions') {
+                $num = intval($parts[2]);
+                $prop = $parts[3];
+            } else {
+                $subparts = explode('_', $parts[1]);
+                $num = intval($subparts[1]);
+                $prop = $parts[2];
+            }
+            if (!isset($interactions[$num])) {
+                $interactions[$num] = (object)['num' => $num];
+            }
+            $interactions[$num]->$prop = $record->value;
+        }
+
+        // Create the statements.
+        return converter::convert_scorm_interactions($attempt, $interactions, $config->lrs, $courseid);
     }
 
     /**

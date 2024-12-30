@@ -91,11 +91,22 @@ class utils {
     }
 
     /**
+     * Convert SCORM 1.2 duration to ISO duration.
+     * 
+     * @param int $seconds duration in seconds
+     */
+    public static function iso8601_duration_from_scorm12($duration) {
+        $parts = explode(':', $duration);
+        $seconds = (intval($parts[0]) * 3600) + (intval($parts[1]) * 60) + intval($parts[2]);
+        return self::iso8601_duration_from_seconds($seconds);
+    }
+
+    /**
      * Convert second to ISO duration.
      * 
      * @param int $seconds duration in seconds
      */
-    public static function iso8601_duration($seconds) {
+    public static function iso8601_duration_from_seconds($seconds) {
         $intervals = array('D' => 60 * 60 * 24, 'H' => 60 * 60, 'M' => 60, 'S' => 1);
 
         $pt = 'PT';
