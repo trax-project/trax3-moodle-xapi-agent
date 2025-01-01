@@ -65,7 +65,7 @@
         </KEYS>
     </TABLE>
 
-    <TABLE NAME="block_trax_xapi_scos_status" COMMENT="SCORM status table">
+    <TABLE NAME="block_trax_xapi_scos_status" COMMENT="SCOs status table">
         <FIELDS>
             <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
             <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
@@ -73,6 +73,30 @@
             <FIELD NAME="attemptid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
             <FIELD NAME="scoid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
             <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
+        </FIELDS>
+        <KEYS>
+            <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        </KEYS>
+    </TABLE>
+
+    <TABLE NAME="block_trax_xapi_client_queue" COMMENT="Client queue table">
+        <FIELDS>
+            <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+            <FIELD NAME="lrs" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
+            <FIELD NAME="status" TYPE="int" LENGTH="4" UNSIGNED="true" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
+            <FIELD NAME="statement" TYPE="text" LENGTH="big" NOTNULL="true" SEQUENCE="false"/>
+            <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        </FIELDS>
+        <KEYS>
+            <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        </KEYS>
+    </TABLE>
+
+    <TABLE NAME="block_trax_xapi_client_status" COMMENT="Client status table">
+        <FIELDS>
+            <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+            <FIELD NAME="lrs" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
+            <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         </FIELDS>
         <KEYS>
             <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

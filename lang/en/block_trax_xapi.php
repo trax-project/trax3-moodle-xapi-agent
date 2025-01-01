@@ -91,6 +91,13 @@ $string['course_events_mode_2'] = 'Events are collected from the <b>log store</b
 $string['course_scorm_enabled_0'] = 'SCORM data is <b>not collected</b> from this course.';
 $string['course_scorm_enabled_1'] = 'SCORM data is collected from the <b>SCORM activities</b> since the {$a}.';
 
+// Show client status in course.
+$string['client_status_0'] = 'This is <b>no statement</b> waiting to be sent to the LRS.';
+$string['client_status_n'] = 'There are <b>{$a} statements</b> waiting to be sent to the LRS.';
+
+$string['client_task_never_run'] = 'Statements will be sent for the first time during the next CRON job.';
+$string['client_task_last_run'] = 'Statements have been sent on the {$a} for the last time.';
+
 // Actors identification.
 $string['actors_id'] = 'Actors identification';
 $string['actors_id_help'] = 'In this section, you can define how actors should be identified in the xAPI statements.';
@@ -165,7 +172,7 @@ $string['custom_plugin_help'] = "The plugin must be a local plugin, located in t
 Please, enter its name without the 'local_' prefix.";
 
 // Dev tools.
-$string['all_dev_tools'] = 'Dev tool';
+$string['all_dev_tools'] = 'Dev tools';
 $string['all_dev_tools_help'] = 'Currently, this consists in giving access to a test page from the xAPI block (site admin only).';
 
 // Log store.
@@ -206,3 +213,4 @@ $string['event'] = 'Event';
 // Tasks.
 $string['task_scan_log_store'] = 'Scan the log store to create xAPI statements';
 $string['task_scan_scorm_data'] = 'Scan SCORM data to create xAPI statements';
+$string['send_queued_statements'] = 'Send the queued statements to the LRS';

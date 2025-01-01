@@ -6,6 +6,7 @@ Go to the **Site administration > Server > Scheduled tasks** page, enable and co
 
 - Scan the log store to create xAPI statements
 - Scan SCORM data to create xAPI statements
+- Send the queued statements to the LRS
 
 ## Plugin configuration
 

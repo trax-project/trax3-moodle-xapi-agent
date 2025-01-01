@@ -22,38 +22,30 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace block_trax_xapi\task;
+
 defined('MOODLE_INTERNAL') || die();
 
-$tasks = array(
-    array(
-        'classname' => '\block_trax_xapi\task\scan_log_store_task',
-        'blocking' => 0,
-        'minute' => '*/5',
-        'hour' => '*',
-        'day' => '*',
-        'month' => '*',
-        'dayofweek' => '*',
-        'disabled' => 0
-    ),
-    array(
-        'classname' => '\block_trax_xapi\task\scan_scorm_data_task',
-        'blocking' => 0,
-        'minute' => '*/5',
-        'hour' => '*',
-        'day' => '*',
-        'month' => '*',
-        'dayofweek' => '*',
-        'disabled' => 0
-    ),
-    array(
-        'classname' => '\block_trax_xapi\task\send_queued_statements_task',
-        'blocking' => 0,
-        'minute' => '*/5',
-        'hour' => '*',
-        'day' => '*',
-        'month' => '*',
-        'dayofweek' => '*',
-        'disabled' => 0
-    ),
-);
+use block_trax_xapi\client;
+
+class send_queued_statements_task extends \core\task\scheduled_task
+{
+    /**
+     * Return the task's name as shown in admin screens.
+     *
+     * @return string
+     */
+    public function get_name()
+    {
+        return get_string('send_queued_statements', 'block_trax_xapi');
+    }
+
+    /**
+     * Execute the task.
+     */
+    public function execute()
+    {
+        client::flush();
+    }
+}
 

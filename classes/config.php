@@ -603,6 +603,15 @@ class config {
     public static function dev_tools_enabled() {
         return get_config('block_trax_xapi', 'dev_tools');
     }
+
+    /**
+     * Batch size
+     *
+     * @return bool
+     */
+    public static function xapi_batch_size() {
+        return 100;
+    }
 }
 
 

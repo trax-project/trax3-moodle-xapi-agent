@@ -36,13 +36,16 @@ class scanner {
     /**
      * Run the SCORM scanner.
      *
+     * @param int $courseid
      * @return void
      */
-    public static function run() {
-        foreach (config::scorm_course_configs() as $courseid => $config) {
+    public static function run(int $courseid = null) {
+        foreach (config::scorm_course_configs() as $id => $config) {
+            if (isset($courseid) && $courseid != $id) {
+                continue;
+            }
             try {
-                self::scan_course_data($courseid, $config);
-                client::flush($config->lrs);
+                self::scan_course_data($id, $config);
             } catch (client_exception $e) {
                 return;
             }
@@ -126,7 +129,7 @@ class scanner {
 
         // Send the statements.
         if (count($statements) > 0) {
-            client::send($config->lrs, $statements);
+            client::queue($config->lrs, $statements);
         }
 
         $transaction = $DB->start_delegated_transaction();
@@ -213,7 +216,7 @@ class scanner {
 
         // Send the statements.
         if (count($statements) > 0) {
-            client::send($config->lrs, $statements);
+            client::queue($config->lrs, $statements);
         }
 
         $transaction = $DB->start_delegated_transaction();
@@ -317,7 +320,7 @@ class scanner {
 
         // Send the statements.
         if (count($statements) > 0) {
-            client::send($config->lrs, $statements);
+            client::queue($config->lrs, $statements);
         }
 
         $transaction = $DB->start_delegated_transaction();
@@ -416,7 +419,7 @@ class scanner {
 
         // Send the statements.
         if (count($statements) > 0) {
-            client::send($config->lrs, $statements);
+            client::queue($config->lrs, $statements);
         }
 
         $transaction = $DB->start_delegated_transaction();

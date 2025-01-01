@@ -23,6 +23,7 @@
  */
 
 use block_trax_xapi\config;
+use block_trax_xapi\client;
 use block_trax_xapi\sources\logs\scanner as LogsScanner;
 use block_trax_xapi\sources\scorm\scanner as ScormScanner;
 
@@ -58,7 +59,7 @@ $urlparams = [
     'returnurl' => $returnurl,
 ];
 
-$baseurl = new moodle_url('/blocks/trax_xapi/views/test.php', $urlparams);
+$baseurl = new moodle_url('/blocks/trax_xapi/views/course_test.php', $urlparams);
 $PAGE->set_url($baseurl);
 
 $title = 'Test page';
@@ -79,20 +80,30 @@ if (empty($test)) {
 
 if ($test == 'logs') {
     echo '<p>Running logs scanner...</p>';
-    LogsScanner::run();
+    LogsScanner::run($courseid);
     echo '<p>Done!</p>';
 }
 
 if ($test == 'scorm') {
     echo '<p>Running SCORM scanner...</p>';
-    ScormScanner::run();
+    ScormScanner::run($courseid);
+    echo '<p>Done!</p>';
+}
+
+if ($test == 'flush') {
+    echo '<p>Sending statements from queue...</p>';
+    client::flush();
     echo '<p>Done!</p>';
 }
 
 // Links.
+
+$queueSize = client::queue_size($lrs);
+
 echo "<div class='mt-5'>
     <a class='btn btn-secondary' href='$baseurl&test=logs'>Run logs scanner</a>
     <a class='btn btn-secondary ml-1' href='$baseurl&test=scorm'>Run SCORM scanner</a>
+    <a class='btn btn-secondary ml-1' href='$baseurl&test=flush'>Flush statements queue ($queueSize)</a>
     <a class='btn btn-primary ml-1' href='$returnurl'>Go back to course</a>
 </div>";
 

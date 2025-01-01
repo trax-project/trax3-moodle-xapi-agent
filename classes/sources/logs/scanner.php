@@ -37,24 +37,28 @@ class scanner {
     /**
      * Run the log store scanner.
      *
+     * @param int $courseid
      * @return void
      */
-    public static function run() {
+    public static function run(int $courseid = null) {
         
         // First, system level events.
-        $config = config::system_events_config();
-        try {
-            self::scan_course_logs(0, $config);
-            client::flush($config->lrs);
-        } catch (client_exception $e) {
-            return;
+        if (!isset($courseid) || $courseid == 0) {
+            $config = config::system_events_config();
+            try {
+                self::scan_course_logs(0, $config);
+            } catch (client_exception $e) {
+                return;
+            }
         }
 
         // Now, course events.
-        foreach (config::log_store_course_configs() as $courseid => $config) {
+        foreach (config::log_store_course_configs() as $id => $config) {
+            if (isset($courseid) && $courseid != $id) {
+                continue;
+            }
             try {
-                self::scan_course_logs($courseid, $config);
-                client::flush($config->lrs);
+                self::scan_course_logs($id, $config);
             } catch (client_exception $e) {
                 return;
             }
@@ -116,7 +120,7 @@ class scanner {
 
         // Send the statements.
         if (count($statements) > 0) {
-            client::send($config->lrs, $statements);
+            client::queue($config->lrs, $statements);
         }
 
         // Update the status.

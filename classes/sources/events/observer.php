@@ -72,7 +72,6 @@ class observer {
         if (count($statements) > 0) {
             try {
                 client::send($config->lrs, $statements);
-                client::flush($config->lrs);
             } catch (client_exception $e) {
                 return;
             }

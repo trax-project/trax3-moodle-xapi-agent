@@ -25,7 +25,8 @@
 use block_trax_xapi\config;
 
 require_once($CFG->dirroot . '/lib/weblib.php');
-//use moodle_url;
+
+use block_trax_xapi\client;
 
 class block_trax_xapi extends block_base {
 
@@ -159,6 +160,24 @@ class block_trax_xapi extends block_base {
             }
         }
 
+        // Client status.
+        if ($this->config->events_mode == config::EVENTS_MODE_LOGS || $this->config->scorm_enabled == config::SCORM_ENABLED) {
+            if ($count = client::queue_size($this->config->lrs)) {
+                $this->content->text .= '<p>'.get_string('client_status_n', 'block_trax_xapi', $count).'</p>';
+            } else {
+                $this->content->text .= '<p>'.get_string('client_status_0', 'block_trax_xapi').'</p>';
+            }
+
+            // Get the client status.
+            if ($status = $DB->get_record('block_trax_xapi_client_status', [
+                'lrs' => $this->config->lrs
+            ])) {
+                $this->content->text .= '<p class="mb-2 text-success">'.get_string('client_task_last_run', 'block_trax_xapi', userdate($status->timestamp, "%d/%m/%Y at %H:%M")).'</p>';
+            } else if ($count) {
+                $this->content->text .= '<p class="text-warning">'.get_string('client_task_never_run', 'block_trax_xapi').'</p>';
+            }
+        }
+
         // Show errors.
         $courseErrors = $DB->get_records('block_trax_xapi_errors', ['courseid' => $COURSE->id, 'lrs' => $this->config->lrs]);
         if (count($courseErrors)) {
@@ -190,12 +209,12 @@ class block_trax_xapi extends block_base {
         // Test.
         if (is_siteadmin() && config::dev_tools_enabled()) {
             $this->content->text .= '<p class="">
-                <a class="btn btn-secondary" href=" ' . new moodle_url("/blocks/trax_xapi/views/test.php", [
+                <a class="btn btn-secondary" href=" ' . new moodle_url("/blocks/trax_xapi/views/course_test.php", [
                     'courseid' => $COURSE->id,
                     'lrs' => $this->config->lrs,
                     'returnurl' => $this->page->url->__toString()
                 ]) . '
-                " class="">Dev test</a>
+                " class="">Test</a>
             </p>';
         }
 

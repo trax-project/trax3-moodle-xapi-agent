@@ -27,8 +27,14 @@ namespace block_trax_xapi;
 defined('MOODLE_INTERNAL') || die();
 
 use block_trax_xapi\exceptions\client_exception;
+use block_trax_xapi\config;
 
 class client {
+
+    /**
+     * No error.
+     */
+    const STATUS_PENDING = 0;
 
     /**
      * Add a list of statements to the queue.
@@ -36,9 +42,117 @@ class client {
      * @param int $lrsnum
      * @param array $statements
      * @return void
+     */
+    public static function queue(int $lrsnum, array $statements) {
+        global $DB;
+
+        $records = array_map(function ($statement) use ($lrsnum) {
+            return [
+                'lrs' => $lrsnum,
+                'status' => self::STATUS_PENDING,
+                'statement' => json_encode($statement),
+                'timestamp' => time(),
+            ];
+        }, $statements);
+
+        $DB->insert_records('block_trax_xapi_client_queue', $records);
+    }
+
+    /**
+     * Return the size of the statements queue.
+     *
+     * @param int $lrsnum
+     * @return int
+     */
+    public static function queue_size(int $lrsnum,) {
+        global $DB;
+
+        $sql = "
+            SELECT COUNT('id')
+            FROM {block_trax_xapi_client_queue}
+            WHERE status = ?
+        ";
+        return $DB->count_records_sql($sql, [self::STATUS_PENDING]);
+    }
+
+    /**
+     * Flush the queue of statements.
+     *
+     * @return void
+     */
+    public static function flush() {
+        self::flush_lrs(config::LRS_PRODUCTION);
+        self::flush_lrs(config::LRS_TEST);
+    }
+
+    /**
+     * Flush the queue of statements for a given LRS.
+     *
+     * @param int $lrsnum
+     * @return void
+     */
+    public static function flush_lrs(int $lrsnum) {
+        global $DB;
+
+        while (1) {
+            $sql = "
+                SELECT *
+                FROM {block_trax_xapi_client_queue}
+                WHERE lrs = ? AND status = ?
+                ORDER BY id
+            ";
+            $records = $DB->get_records_sql($sql, [$lrsnum, self::STATUS_PENDING], 0, config::xapi_batch_size());
+
+            if (empty($records)) {
+                return;
+            }
+
+            $statements = array_map(function ($record) {
+                return json_decode($record->statement);
+            }, $records);
+
+            self::send($lrsnum, $statements);
+            
+            $ids = array_map(function ($record) {
+                return $record->id;
+            }, $records);
+
+            $DB->delete_records_select('block_trax_xapi_client_queue', 'id IN (' . implode(',', $ids) . ')');
+
+            self::update_client_status($lrsnum);
+        }        
+    }
+
+    /**
+     * Update client status.
+     *
+     * @param int $lrsnum
+     * @return void
+     */
+    public static function update_client_status(int $lrsnum) {
+        global $DB;
+
+        if (!$status = $DB->get_record('block_trax_xapi_client_status', ['lrs' => $lrsnum])) {
+            $DB->insert_record('block_trax_xapi_client_status', [
+                'lrs' => $lrsnum,
+                'timestamp' => time(),
+            ]);
+        } else {
+            $status->timestamp = time();
+            $DB->update_record('block_trax_xapi_client_status', $status);
+        }
+    }
+
+    /**
+     * Send a list of statements without going thru the queue.
+     *
+     * @param int $lrsnum
+     * @param array $statements
+     * @return void
      * @throws \block_trax_xapi\exceptions\client_exception
      */
     public static function send(int $lrsnum, array $statements) {
+        $statements = array_values($statements);
         $lrs = new lrs($lrsnum);
 
         // Post the statements.
@@ -55,15 +169,5 @@ class client {
             logger::log_lrs_error($lrsnum, 'statements', 'post', $statements, $response);
             throw new client_exception();
         }
-    }
-
-    /**
-     * Flush the queue.
-     *
-     * @param int $lrsnum
-     * @return void
-     * @throws \block_trax_xapi\exceptions\client_exception
-     */
-    public static function flush($lrsnum) {
     }
 }
