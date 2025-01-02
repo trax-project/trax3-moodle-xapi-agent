@@ -26,13 +26,12 @@ require('../../../config.php');
 
 require_login();
 
+use block_trax_xapi\errors;
+
 $courseid = required_param('courseid', PARAM_INT);
 $lrs = required_param('lrs', PARAM_INT);
 $returnurl = required_param('returnurl', PARAM_URL);
 
-$DB->delete_records('block_trax_xapi_errors', [
-    'courseid' => $courseid,
-    'lrs' => $lrs,
-]);
+errors::delete_logs($lrs, $courseid);
 
 redirect($returnurl);

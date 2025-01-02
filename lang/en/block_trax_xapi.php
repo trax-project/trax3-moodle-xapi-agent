@@ -92,7 +92,7 @@ $string['course_scorm_enabled_0'] = 'SCORM data is <b>not collected</b> from thi
 $string['course_scorm_enabled_1'] = 'SCORM data is collected from the <b>SCORM activities</b> since the {$a}.';
 
 // Show client status in course.
-$string['client_status_0'] = 'This is <b>no statement</b> waiting to be sent to the LRS.';
+$string['client_status_0'] = 'There is <b>no statement</b> waiting to be sent to the LRS.';
 $string['client_status_n'] = 'There are <b>{$a} statements</b> waiting to be sent to the LRS.';
 
 $string['client_task_never_run'] = 'Statements will be sent for the first time during the next CRON job.';
@@ -177,7 +177,7 @@ $string['all_dev_tools_help'] = 'Currently, this consists in giving access to a 
 
 // Log store.
 $string['logs_status_never_run'] = 'Logs from this course will be scanned for the first time during the next CRON job.';
-$string['logs_status_last_run'] = 'Logs from this course has been scanned on the {$a} for the last time.';
+$string['logs_status_last_run'] = 'Logs from this course have been scanned on the {$a} for the last time.';
 $string['logs_status_replay'] = 'Rescan from the begining';
 
 // SCORM data.
@@ -193,9 +193,9 @@ $string['exception_entry_not_found'] = 'TRAX xAPI Agent: entry not found.';
 $string['errors_management'] = 'Errors management';
 $string['errors_management_help'] = '';
 
-$string['course_errors'] = 'xAPI modeling errors';
-$string['course_errors_notice'] = '{$a} error(s) occurred during xAPI data modeling for this course.';
-$string['course_errors_delete'] = 'Delete xAPI modeling errors';
+$string['modeling_errors'] = 'xAPI modeling errors';
+$string['modeling_errors_notice'] = '{$a} error(s) occurred during xAPI data modeling for this course.';
+$string['modeling_errors_delete'] = 'Delete xAPI modeling errors';
 $string['client_errors'] = 'LRS communication errors';
 $string['client_errors_notice'] = '{$a} error(s) occurred during communication with the LRS.';
 $string['client_errors_delete'] = 'Delete LRS communication errors';

@@ -129,7 +129,7 @@ class scanner {
 
         // Send the statements.
         if (count($statements) > 0) {
-            client::queue($config->lrs, $statements);
+            client::queue($config->lrs, $courseid, $statements);
         }
 
         $transaction = $DB->start_delegated_transaction();
@@ -216,7 +216,7 @@ class scanner {
 
         // Send the statements.
         if (count($statements) > 0) {
-            client::queue($config->lrs, $statements);
+            client::queue($config->lrs, $courseid, $statements);
         }
 
         $transaction = $DB->start_delegated_transaction();
@@ -320,7 +320,7 @@ class scanner {
 
         // Send the statements.
         if (count($statements) > 0) {
-            client::queue($config->lrs, $statements);
+            client::queue($config->lrs, $courseid, $statements);
         }
 
         $transaction = $DB->start_delegated_transaction();
@@ -419,7 +419,7 @@ class scanner {
 
         // Send the statements.
         if (count($statements) > 0) {
-            client::queue($config->lrs, $statements);
+            client::queue($config->lrs, $courseid, $statements);
         }
 
         $transaction = $DB->start_delegated_transaction();

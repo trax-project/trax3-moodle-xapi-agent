@@ -26,7 +26,7 @@ namespace block_trax_xapi;
 
 defined('MOODLE_INTERNAL') || die();
 
-class logger {
+class errors {
 
     /**
      * Modeling error.
@@ -130,6 +130,63 @@ class logger {
             'timestamp' => time(),
         ]);
     }
+
+    /**
+     * Count modeling errors.
+     *
+     * @param int $lrsnum
+     * @param int $courseid
+     * @return int
+     */
+    public static function count_modeling_errors(int $lrsnum, int $courseid = null) {
+        global $DB;
+        if (isset($courseid)) {
+            return $DB->get_records('block_trax_xapi_errors', ['courseid' => $courseid, 'lrs' => $lrsnum, 'type' => self::ERROR_MODELING]);
+        } else {
+            return $DB->get_records('block_trax_xapi_errors', ['lrs' => $lrsnum, 'type' => self::ERROR_MODELING]);
+        }
+    }
+
+    /**
+     * Count client errors.
+     *
+     * @param int $lrsnum
+     * @return int
+     */
+    public static function count_client_errors(int $lrsnum) {
+        global $DB;
+        return $DB->get_records('block_trax_xapi_errors', ['courseid' => null, 'lrs' => $lrsnum]);
+    }
+
+    /**
+     * Delete errors.
+     *
+     * @param int $lrsnum
+     * @param int $courseid
+     * @return void
+     */
+    public static function delete_logs(int $lrsnum, int $courseid = null) {
+        global $DB;
+        if (isset($courseid)) {
+            return $DB->delete_records('block_trax_xapi_errors', ['courseid' => $courseid, 'lrs' => $lrsnum]);
+        } else {
+            return $DB->delete_records('block_trax_xapi_errors', ['lrs' => $lrsnum]);
+        }
+    }
+
+    /**
+     * Get errors.
+     *
+     * @param int $lrsnum
+     * @param int $courseid
+     * @return array
+     */
+    public static function get_logs(int $lrsnum, int $courseid = null) {
+        global $DB;
+        if (isset($courseid)) {
+            return $DB->get_records('block_trax_xapi_errors', ['courseid' => $courseid, 'lrs' => $lrsnum]);
+        } else {
+            return $DB->get_records('block_trax_xapi_errors', ['lrs' => $lrsnum]);
+        }
+    }
 }
-
-

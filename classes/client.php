@@ -40,15 +40,17 @@ class client {
      * Add a list of statements to the queue.
      *
      * @param int $lrsnum
+     * @param int $courseid
      * @param array $statements
      * @return void
      */
-    public static function queue(int $lrsnum, array $statements) {
+    public static function queue(int $lrsnum, int $courseid, array $statements) {
         global $DB;
 
-        $records = array_map(function ($statement) use ($lrsnum) {
+        $records = array_map(function ($statement) use ($lrsnum, $courseid) {
             return [
                 'lrs' => $lrsnum,
+                'courseid' => $courseid,
                 'status' => self::STATUS_PENDING,
                 'statement' => json_encode($statement),
                 'timestamp' => time(),
@@ -62,46 +64,68 @@ class client {
      * Return the size of the statements queue.
      *
      * @param int $lrsnum
+     * @param int $courseid
      * @return int
      */
-    public static function queue_size(int $lrsnum,) {
+    public static function queue_size(int $lrsnum, int $courseid = null) {
         global $DB;
 
-        $sql = "
-            SELECT COUNT('id')
-            FROM {block_trax_xapi_client_queue}
-            WHERE status = ?
-        ";
-        return $DB->count_records_sql($sql, [self::STATUS_PENDING]);
+        if (isset($courseid)) {
+            $sql = "
+                SELECT COUNT('id')
+                FROM {block_trax_xapi_client_queue}
+                WHERE status = ? AND lrs = ? AND courseid = ?
+            ";
+            return $DB->count_records_sql($sql, [self::STATUS_PENDING, $lrsnum, $courseid]);
+        } else {
+            $sql = "
+                SELECT COUNT('id')
+                FROM {block_trax_xapi_client_queue}
+                WHERE status = ? AND lrs = ?
+            ";
+            return $DB->count_records_sql($sql, [self::STATUS_PENDING, $lrsnum]);
+        }
     }
 
     /**
      * Flush the queue of statements.
      *
+     * @param int $courseid
      * @return void
      */
-    public static function flush() {
-        self::flush_lrs(config::LRS_PRODUCTION);
-        self::flush_lrs(config::LRS_TEST);
+    public static function flush(int $courseid = null) {
+        self::flush_lrs(config::LRS_PRODUCTION, $courseid);
+        self::flush_lrs(config::LRS_TEST, $courseid);
     }
 
     /**
      * Flush the queue of statements for a given LRS.
      *
      * @param int $lrsnum
+     * @param int $courseid
      * @return void
      */
-    public static function flush_lrs(int $lrsnum) {
+    public static function flush_lrs(int $lrsnum, int $courseid = null) {
         global $DB;
 
         while (1) {
-            $sql = "
-                SELECT *
-                FROM {block_trax_xapi_client_queue}
-                WHERE lrs = ? AND status = ?
-                ORDER BY id
-            ";
-            $records = $DB->get_records_sql($sql, [$lrsnum, self::STATUS_PENDING], 0, config::xapi_batch_size());
+            if (isset($courseid)) {
+                $sql = "
+                    SELECT *
+                    FROM {block_trax_xapi_client_queue}
+                    WHERE lrs = ? AND courseid = ? AND status = ?
+                    ORDER BY id
+                ";
+                $records = $DB->get_records_sql($sql, [$lrsnum, $courseid, self::STATUS_PENDING], 0, config::xapi_batch_size());
+            } else {
+                $sql = "
+                    SELECT *
+                    FROM {block_trax_xapi_client_queue}
+                    WHERE lrs = ? AND status = ?
+                    ORDER BY id
+                ";
+                $records = $DB->get_records_sql($sql, [$lrsnum, self::STATUS_PENDING], 0, config::xapi_batch_size());
+            }
 
             if (empty($records)) {
                 return;
@@ -124,26 +148,6 @@ class client {
     }
 
     /**
-     * Update client status.
-     *
-     * @param int $lrsnum
-     * @return void
-     */
-    public static function update_client_status(int $lrsnum) {
-        global $DB;
-
-        if (!$status = $DB->get_record('block_trax_xapi_client_status', ['lrs' => $lrsnum])) {
-            $DB->insert_record('block_trax_xapi_client_status', [
-                'lrs' => $lrsnum,
-                'timestamp' => time(),
-            ]);
-        } else {
-            $status->timestamp = time();
-            $DB->update_record('block_trax_xapi_client_status', $status);
-        }
-    }
-
-    /**
      * Send a list of statements without going thru the queue.
      *
      * @param int $lrsnum
@@ -160,14 +164,34 @@ class client {
             $response = $lrs->statements()->post($statements);
         } catch (\Exception $e) {
             // Error from the HTTP client.
-            logger::log_http_error($lrsnum, $lrs->endpoint(), 'statements', 'post', $statements, $lrs->headers(), $e);
+            errors::log_http_error($lrsnum, $lrs->endpoint(), 'statements', 'post', $statements, $lrs->headers(), $e);
             throw new client_exception();
         }
 
         // Error returned from the LRS.
         if ($response->code >= 400) {
-            logger::log_lrs_error($lrsnum, 'statements', 'post', $statements, $response);
+            errors::log_lrs_error($lrsnum, 'statements', 'post', $statements, $response);
             throw new client_exception();
+        }
+    }
+
+    /**
+     * Update client status.
+     *
+     * @param int $lrsnum
+     * @return void
+     */
+    public static function update_client_status(int $lrsnum) {
+        global $DB;
+
+        if (!$status = $DB->get_record('block_trax_xapi_client_status', ['lrs' => $lrsnum])) {
+            $DB->insert_record('block_trax_xapi_client_status', [
+                'lrs' => $lrsnum,
+                'timestamp' => time(),
+            ]);
+        } else {
+            $status->timestamp = time();
+            $DB->update_record('block_trax_xapi_client_status', $status);
         }
     }
 }

@@ -27,6 +27,8 @@ require_once($CFG->libdir . '/tablelib.php');
 
 require_login();
 
+use block_trax_xapi\errors;
+
 // URL params.
 
 $courseid = required_param('courseid', PARAM_INT);
@@ -47,25 +49,22 @@ $urlparams = [
     'returnurl' => $returnurl,
 ];
 
-$baseurl = new moodle_url('/blocks/trax_xapi/views/course_errors.php', $urlparams);
+$baseurl = new moodle_url('/blocks/trax_xapi/views/course_modeling_errors.php', $urlparams);
 $PAGE->set_url($baseurl);
 
-$title = get_string('course_errors', 'block_trax_xapi');
+$title = get_string('modeling_errors', 'block_trax_xapi');
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
 
 $PAGE->navbar->add(get_string('blocks'));
 $PAGE->navbar->add(get_string('pluginname', 'block_trax_xapi'));
-$PAGE->navbar->add(get_string('course_errors', 'block_trax_xapi'), $baseurl);
+$PAGE->navbar->add(get_string('modeling_errors', 'block_trax_xapi'), $baseurl);
 echo $OUTPUT->header();
 
 // Fetch data.
 
-$errors = $DB->get_records('block_trax_xapi_errors', [
-    'courseid' => $courseid,
-    'lrs' => $lrs
-]);
+$errors = errors::get_logs($lrs, $courseid);
 $errors = array_reverse($errors);
 
 // Table setup.
@@ -102,12 +101,12 @@ $table->print_html();
 
 // Delete errors.
 
-$url = (new moodle_url("/blocks/trax_xapi/actions/delete_course_errors.php", $urlparams))->__toString();
+$url = (new moodle_url("/blocks/trax_xapi/actions/delete_course_modeling_errors.php", $urlparams))->__toString();
 
 echo '
     <div class="mb-3 mt-3">
         <a href="' . $url . '" class="btn btn-secondary">
-        ' . get_string('course_errors_delete', 'block_trax_xapi') . '
+        ' . get_string('modeling_errors_delete', 'block_trax_xapi') . '
         </a>
     </div>
 ';

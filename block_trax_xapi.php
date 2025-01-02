@@ -27,6 +27,7 @@ use block_trax_xapi\config;
 require_once($CFG->dirroot . '/lib/weblib.php');
 
 use block_trax_xapi\client;
+use block_trax_xapi\errors;
 
 class block_trax_xapi extends block_base {
 
@@ -70,7 +71,7 @@ class block_trax_xapi extends block_base {
      * @return string
      */
     public function get_content() {
-        global $COURSE, $DB, $OUTPUT;
+        global $COURSE, $DB;
 
         if ($this->content !== null) {
             return $this->content;
@@ -99,8 +100,9 @@ class block_trax_xapi extends block_base {
 
         // Selected LRS.
         $this->content->text = '<p>'.get_string('course_lrs_'.$this->config->lrs, 'block_trax_xapi').'</p>';
-
+      
         // Events mode.
+        $this->content->text .= '<hr>';
         $this->content->text .= '<p>'.get_string('course_events_mode_'.$this->config->events_mode, 'block_trax_xapi', $this->config->logs_from).'</p>';
 
         // Log store mode.
@@ -131,6 +133,7 @@ class block_trax_xapi extends block_base {
         }
 
         // SCORM mode.
+        $this->content->text .= '<hr>';
         $this->content->text .= '<p>'.get_string('course_scorm_enabled_'.$this->config->scorm_enabled, 'block_trax_xapi', $this->config->scorm_from).'</p>';
 
         // SCORM data.
@@ -162,7 +165,8 @@ class block_trax_xapi extends block_base {
 
         // Client status.
         if ($this->config->events_mode == config::EVENTS_MODE_LOGS || $this->config->scorm_enabled == config::SCORM_ENABLED) {
-            if ($count = client::queue_size($this->config->lrs)) {
+            $this->content->text .= '<hr>';
+            if ($count = client::queue_size($this->config->lrs, $COURSE->id)) {
                 $this->content->text .= '<p>'.get_string('client_status_n', 'block_trax_xapi', $count).'</p>';
             } else {
                 $this->content->text .= '<p>'.get_string('client_status_0', 'block_trax_xapi').'</p>';
@@ -179,21 +183,24 @@ class block_trax_xapi extends block_base {
         }
 
         // Show errors.
-        $courseErrors = $DB->get_records('block_trax_xapi_errors', ['courseid' => $COURSE->id, 'lrs' => $this->config->lrs]);
-        if (count($courseErrors)) {
+        $modelingErrors = errors::count_modeling_errors($this->config->lrs, $COURSE->id);
+        $clientErrors = errors::count_client_errors($this->config->lrs);
+        if ($modelingErrors || $clientErrors) {
+            $this->content->text .= '<hr>';
+        }
+        if ($modelingErrors) {
             $this->content->text .= '<p class="text-danger">
-                <a href=" ' . new moodle_url("/blocks/trax_xapi/views/course_errors.php", [
+                <a href=" ' . new moodle_url("/blocks/trax_xapi/views/course_modeling_errors.php", [
                     'courseid' => $COURSE->id,
                     'lrs' => $this->config->lrs,
                     'returnurl' => $this->page->url->__toString()
                 ]) . '
                 " class="text-danger">
-                    '.get_string('course_errors_notice', 'block_trax_xapi', count($courseErrors)).'
+                    '.get_string('modeling_errors_notice', 'block_trax_xapi', $modelingErrors).'
                 </a>
             </p>';
         }
-        $otherErrors = $DB->get_records('block_trax_xapi_errors', ['courseid' => null, 'lrs' => $this->config->lrs]);
-        if (count($otherErrors)) {
+        if ($clientErrors) {
             $this->content->text .= '<p class="text-danger">
                 <a href=" ' . new moodle_url("/blocks/trax_xapi/views/client_errors.php", [
                     'courseid' => $COURSE->id,
@@ -201,20 +208,22 @@ class block_trax_xapi extends block_base {
                     'returnurl' => $this->page->url->__toString()
                 ]) . '
                 " class="text-danger">
-                    '.get_string('client_errors_notice', 'block_trax_xapi', count($otherErrors)).'
+                    '.get_string('client_errors_notice', 'block_trax_xapi', $clientErrors).'
                 </a>
             </p>';
         }
 
         // Test.
         if (is_siteadmin() && config::dev_tools_enabled()) {
+            $this->content->text .= '<hr>';
+            $this->content->text .= '<p><b>Tools for developers:</b></p>';
             $this->content->text .= '<p class="">
                 <a class="btn btn-secondary" href=" ' . new moodle_url("/blocks/trax_xapi/views/course_test.php", [
                     'courseid' => $COURSE->id,
                     'lrs' => $this->config->lrs,
                     'returnurl' => $this->page->url->__toString()
                 ]) . '
-                " class="">Test</a>
+                " class="">Test page</a>
             </p>';
         }
 

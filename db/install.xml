@@ -34,6 +34,10 @@
         <KEYS>
             <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         </KEYS>
+        <INDEXES>
+            <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid"/>
+            <INDEX NAME="lrs" UNIQUE="false" FIELDS="lrs"/>
+        </INDEXES>
     </TABLE>
 
     <TABLE NAME="block_trax_xapi_logs_status" COMMENT="Logs status table">
@@ -47,6 +51,10 @@
         <KEYS>
             <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         </KEYS>
+        <INDEXES>
+            <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid"/>
+            <INDEX NAME="lrs" UNIQUE="false" FIELDS="lrs"/>
+        </INDEXES>
     </TABLE>
 
     <TABLE NAME="block_trax_xapi_scorm_status" COMMENT="SCORM status table">
@@ -63,6 +71,10 @@
         <KEYS>
             <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         </KEYS>
+        <INDEXES>
+            <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid"/>
+            <INDEX NAME="lrs" UNIQUE="false" FIELDS="lrs"/>
+        </INDEXES>
     </TABLE>
 
     <TABLE NAME="block_trax_xapi_scos_status" COMMENT="SCOs status table">
@@ -77,11 +89,16 @@
         <KEYS>
             <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         </KEYS>
+        <INDEXES>
+            <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid"/>
+            <INDEX NAME="lrs" UNIQUE="false" FIELDS="lrs"/>
+        </INDEXES>
     </TABLE>
 
     <TABLE NAME="block_trax_xapi_client_queue" COMMENT="Client queue table">
         <FIELDS>
             <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+            <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
             <FIELD NAME="lrs" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
             <FIELD NAME="status" TYPE="int" LENGTH="4" UNSIGNED="true" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
             <FIELD NAME="statement" TYPE="text" LENGTH="big" NOTNULL="true" SEQUENCE="false"/>
@@ -90,6 +107,10 @@
         <KEYS>
             <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         </KEYS>
+        <INDEXES>
+            <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid"/>
+            <INDEX NAME="lrs" UNIQUE="false" FIELDS="lrs"/>
+        </INDEXES>
     </TABLE>
 
     <TABLE NAME="block_trax_xapi_client_status" COMMENT="Client status table">
@@ -101,6 +122,9 @@
         <KEYS>
             <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         </KEYS>
+        <INDEXES>
+            <INDEX NAME="lrs" UNIQUE="false" FIELDS="lrs"/>
+        </INDEXES>
     </TABLE>
 
   </TABLES>

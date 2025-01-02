@@ -92,13 +92,13 @@ if ($test == 'scorm') {
 
 if ($test == 'flush') {
     echo '<p>Sending statements from queue...</p>';
-    client::flush();
+    client::flush_lrs($lrs, $courseid);
     echo '<p>Done!</p>';
 }
 
 // Links.
 
-$queueSize = client::queue_size($lrs);
+$queueSize = client::queue_size($lrs, $courseid);
 
 echo "<div class='mt-5'>
     <a class='btn btn-secondary' href='$baseurl&test=logs'>Run logs scanner</a>

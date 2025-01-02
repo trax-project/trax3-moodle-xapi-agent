@@ -47,7 +47,7 @@ $urlparams = [
     'returnurl' => $returnurl,
 ];
 
-$baseurl = new moodle_url('/blocks/trax_xapi/views/course_errors.php', $urlparams);
+$baseurl = new moodle_url('/blocks/trax_xapi/views/client_errors.php', $urlparams);
 $PAGE->set_url($baseurl);
 
 $title = get_string('client_errors', 'block_trax_xapi');

@@ -137,7 +137,7 @@ class converter {
         $feedbacks = array_filter($feedbacks, function ($feedback) use ($type, $lrsnum, $courseid) {
             // Log the error.
             if ($feedback->error && $feedback->error !== modeler::ERROR_IGNORE) {
-                logger::log_modeling_error($type, $lrsnum, $courseid, $feedback->source, $feedback->template, $feedback->error, isset($feedback->exception) ? $feedback->exception : null);
+                errors::log_modeling_error($type, $lrsnum, $courseid, $feedback->source, $feedback->template, $feedback->error, isset($feedback->exception) ? $feedback->exception : null);
             }
             return !$feedback->error;
         });
