@@ -22,16 +22,16 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_trax_xapi\client;
 use block_trax_xapi\config;
-use block_trax_xapi\errors;
 
 require('../../../config.php');
 require_login();
+config::require_dev_tools();
 
 // URL params.
 
-$source = required_param('source', PARAM_TEXT);
-$courseid = required_param('courseid', PARAM_INT);
+$courseid = optional_param('courseid', null, PARAM_INT);
 $lrs = required_param('lrs', PARAM_INT);
 $returnurl = required_param('returnurl', PARAM_URL);
 
@@ -41,7 +41,6 @@ config::require_admin();
 
 // Action.
 
-$method = 'delete_'.$source.'_logs';
-errors::$method($lrs, $courseid);
+client::clear_lrs($lrs, $courseid);
 
 redirect($returnurl);

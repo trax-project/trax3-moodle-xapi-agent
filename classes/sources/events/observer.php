@@ -30,7 +30,8 @@ use block_trax_xapi\config;
 use block_trax_xapi\selector;
 use block_trax_xapi\converter;
 use block_trax_xapi\client;
-use block_trax_xapi\exceptions\client_exception;
+use block_trax_xapi\exceptions\lrs_client_exception;
+use block_trax_xapi\exceptions\lrs_response_exception;
 
 class observer {
 
@@ -69,12 +70,17 @@ class observer {
         $statements = converter::convert_events([$event], $config->lrs, $courseid);
 
         // Send the statements.
-        if (count($statements) > 0) {
-            try {
-                client::send($config->lrs, $statements);
-            } catch (client_exception $e) {
-                return;
-            }
+        try {
+            client::send($config->lrs, $statements);
+        } catch (lrs_client_exception $e) {
+            // We don't want to abort the current page, so we return. There will be an error log.
+            return;
+        } catch (lrs_response_exception $e) {
+            // We don't want to abort the current page, so we return. There will be an error log.
+            return;
+        } catch (\Exception $e) {
+            // Unwaited exception. We don't want to abort the current page, so we return.
+            return;
         }
     }
 }

@@ -32,6 +32,7 @@ require_login();
 
 // URL params.
 
+$source = required_param('source', PARAM_TEXT);
 $lrs = required_param('lrs', PARAM_INT);
 $returnurl = required_param('returnurl', PARAM_URL);
 
@@ -41,31 +42,28 @@ $PAGE->set_context(null); // hack - set context to something, by default to syst
 config::require_admin();
 
 $urlparams = [
+    'source' => $source,
     'lrs' => $lrs,
     'returnurl' => $returnurl,
 ];
 
-$baseurl = new moodle_url('/blocks/trax_xapi/views/client_errors.php', $urlparams);
+$baseurl = new moodle_url('/blocks/trax_xapi/views/global_modeling_errors.php', $urlparams);
 $PAGE->set_url($baseurl);
 
-$title = get_string('client_errors', 'block_trax_xapi');
+$title = get_string($source.'_modeling_errors', 'block_trax_xapi');
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
 
 $PAGE->navbar->add(get_string('pluginname', 'block_trax_xapi'));
-$PAGE->navbar->add(get_string('client_errors', 'block_trax_xapi'), $baseurl);
+$PAGE->navbar->add(get_string($source.'_modeling_errors', 'block_trax_xapi'), $baseurl);
 echo $OUTPUT->header();
 
 
-// Fetch data.
-
-$errors = errors::get_client_logs($lrs);
-
 // Links.
 
-$deleteurl = (new moodle_url("/blocks/trax_xapi/actions/delete_client_errors.php", $urlparams))->__toString();
-$retryurl = (new moodle_url("/blocks/trax_xapi/actions/retry_client_errors.php", $urlparams))->__toString();
+$retryurl = (new moodle_url("/blocks/trax_xapi/actions/retry_global_modeling_errors.php", $urlparams))->__toString();
+$deleteurl = (new moodle_url("/blocks/trax_xapi/actions/delete_global_modeling_errors.php", $urlparams))->__toString();
 
 echo '
     <div class="mb-3 mt-3">
@@ -75,42 +73,50 @@ echo '
         <a href="' . $deleteurl . '" class="btn btn-secondary">
         ' . get_string('forget', 'block_trax_xapi') . '
         </a>
-        <a class="btn btn-primary" href="' . $returnurl . '">
-        ' . get_string('back', 'block_trax_xapi') . '
-        </a>
+        <a class="btn btn-primary" href="' . $returnurl . '">'.get_string('back', 'block_trax_xapi').'</a>
     </div>
 ';
 
+// Fetch data.
+
+$method = 'get_' . $source . '_logs';
+$errors = errors::$method($lrs);
+
 // Table setup.
 
-$table = new flexible_table('client-errors');
+$table = new flexible_table('global-errors');
 
-$table->define_columns(['timestamp', 'type']);
+$table->define_columns(['timestamp', 'course', 'code', 'template']);
 $table->define_headers([
     get_string('timestamp', 'block_trax_xapi'),
+    get_string('course', 'block_trax_xapi'),
     get_string('type', 'block_trax_xapi'),
+    get_string('template', 'block_trax_xapi')
 ]);
 $table->define_baseurl($baseurl);
 
 $table->set_attribute('cellspacing', '0');
-$table->set_attribute('id', 'client-errors');
+$table->set_attribute('id', 'global-errors');
 $table->set_attribute('class', 'generaltable generalbox');
-
-$table->column_class('timestamp', 'timestamp');
-$table->column_class('type', 'type');
 
 $table->setup();
 
 // Table content.
 
 foreach($errors as $error) {
+    $url = new moodle_url('/blocks/trax_xapi/views/course_status.php', [
+        'courseid' => $error->courseid,
+        'lrs' => $lrs,
+    ]);
+    $course = "<a href='$url'>" . $error->coursename . "</a>";
     $timestamp = userdate($error->timestamp, "%d/%m/%Y at %H:%M");
-    $type = $error->error ? $error->error : get_string('error_http', 'block_trax_xapi');
-    $table->add_data([$timestamp, $type]);
+    $code = get_string('modeling_error_code_' . $error->error, 'block_trax_xapi');
+    $template = json_decode($error->data)->template;
+    $table->add_data([$timestamp, $course, $code, $template]);
 }
 $table->print_html();
 
-// Delete errors.
+// Links.
 
 echo '
     <div class="mb-3 mt-3">
@@ -120,9 +126,7 @@ echo '
         <a href="' . $deleteurl . '" class="btn btn-secondary">
         ' . get_string('forget', 'block_trax_xapi') . '
         </a>
-        <a class="btn btn-primary" href="' . $returnurl . '">
-        ' . get_string('back', 'block_trax_xapi') . '
-        </a>
+        <a class="btn btn-primary" href="' . $returnurl . '">'.get_string('back', 'block_trax_xapi').'</a>
     </div>
 ';
 

@@ -27,6 +27,22 @@ defined('MOODLE_INTERNAL') || die;
 use block_trax_xapi\config;
 
 if ($ADMIN->fulltree) {
+
+    $produrl = new moodle_url('/blocks/trax_xapi/views/global_status.php', [
+        'lrs' => config::LRS_PRODUCTION,
+    ]);
+    
+    $testurl = new moodle_url('/blocks/trax_xapi/views/global_status.php', [
+        'lrs' => config::LRS_TEST,
+    ]);
+    
+    $settings->add(new admin_setting_heading(
+        'intro',
+        '',
+        "Use these links to check-out the <a href='$produrl'>Production LRS</a> status
+        and <a href='$testurl'>Test LRS</a> status."
+    ));
+
     
     // -------------------- Production LRS -------------------- //
 
@@ -207,6 +223,22 @@ if ($ADMIN->fulltree) {
         get_string('system_events_from_help', 'block_trax_xapi'),
         date('d/m/Y', time()),
         PARAM_TEXT
+    ));
+
+    // -------------------- LRS client --------------------.
+
+    $settings->add(new admin_setting_heading(
+        'lrs_client',
+        get_string('lrs_client', 'block_trax_xapi'),
+        get_string('lrs_client_help', 'block_trax_xapi')
+    ));
+
+    $settings->add(new admin_setting_configtext(
+        'block_trax_xapi/lrs_batch_size',
+        get_string('lrs_batch_size', 'block_trax_xapi'),
+        get_string('lrs_batch_size_help', 'block_trax_xapi'),
+        100,
+        PARAM_INT
     ));
 
     // -------------------- Dev --------------------.

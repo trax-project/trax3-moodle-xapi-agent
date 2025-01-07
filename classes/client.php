@@ -26,15 +26,27 @@ namespace block_trax_xapi;
 
 defined('MOODLE_INTERNAL') || die();
 
-use block_trax_xapi\exceptions\client_exception;
+use block_trax_xapi\exceptions\lrs_response_exception;
+use block_trax_xapi\exceptions\lrs_client_exception;
 use block_trax_xapi\config;
+use block_trax_xapi\errors;
 
 class client {
 
     /**
      * No error.
      */
-    const STATUS_PENDING = 0;
+    const STATUS_PENDING = 1;
+
+    /**
+     * No error.
+     */
+    const STATUS_ERROR_CLIENT = 2;
+
+    /**
+     * No error.
+     */
+    const STATUS_ERROR_LRS = 3;
 
     /**
      * Add a list of statements to the queue.
@@ -90,12 +102,23 @@ class client {
     /**
      * Flush the queue of statements.
      *
-     * @param int $courseid
      * @return void
      */
-    public static function flush(int $courseid = null) {
-        self::flush_lrs(config::LRS_PRODUCTION, $courseid);
-        self::flush_lrs(config::LRS_TEST, $courseid);
+    public static function flush() {
+        self::flush_lrs(config::LRS_PRODUCTION);
+        self::flush_lrs(config::LRS_TEST);
+    }
+
+    /**
+     * Retry the queue of statements for a given LRS.
+     *
+     * @param int $lrsnum
+     * @return void
+     */
+    public static function retry_lrs(int $lrsnum) {
+        errors::delete_client_logs($lrsnum);
+        self::flush_lrs($lrsnum, null, self::STATUS_ERROR_CLIENT);
+        self::flush_lrs($lrsnum, null, self::STATUS_ERROR_LRS);
     }
 
     /**
@@ -105,46 +128,115 @@ class client {
      * @param int $courseid
      * @return void
      */
-    public static function flush_lrs(int $lrsnum, int $courseid = null) {
+    public static function flush_lrs(int $lrsnum, int $courseid = null, int $status = self::STATUS_PENDING) {
         global $DB;
+
+        // Defined the first and last ids.
+        $firstid = 0;
+        if (isset($courseid)) {
+            $sql = "
+                SELECT *
+                FROM {block_trax_xapi_client_queue}
+                WHERE lrs = ? AND courseid = ? AND status = ?
+                ORDER BY id DESC
+            ";
+            $records = $DB->get_records_sql($sql, [$lrsnum, $courseid, $status, $firstid], 0, 1);
+        } else {
+            $sql = "
+                SELECT *
+                FROM {block_trax_xapi_client_queue}
+                WHERE lrs = ? AND status = ?
+                ORDER BY id DESC
+            ";
+            $records = $DB->get_records_sql($sql, [$lrsnum, $status, $firstid], 0, 1);
+        }
+        if (empty($records)) {
+            return;
+        }
+        $lastrecord = end($records);
+        $lastid = $lastrecord->id;
 
         while (1) {
             if (isset($courseid)) {
                 $sql = "
                     SELECT *
                     FROM {block_trax_xapi_client_queue}
-                    WHERE lrs = ? AND courseid = ? AND status = ?
+                    WHERE lrs = ? AND courseid = ? AND status = ? AND id > ? AND id <= ?
                     ORDER BY id
                 ";
-                $records = $DB->get_records_sql($sql, [$lrsnum, $courseid, self::STATUS_PENDING], 0, config::xapi_batch_size());
+                $records = $DB->get_records_sql($sql, [$lrsnum, $courseid, $status, $firstid, $lastid], 0, config::xapi_batch_size());
             } else {
                 $sql = "
                     SELECT *
                     FROM {block_trax_xapi_client_queue}
-                    WHERE lrs = ? AND status = ?
+                    WHERE lrs = ? AND status = ? AND id > ? AND id <= ?
                     ORDER BY id
                 ";
-                $records = $DB->get_records_sql($sql, [$lrsnum, self::STATUS_PENDING], 0, config::xapi_batch_size());
+                $records = $DB->get_records_sql($sql, [$lrsnum, $status, $firstid, $lastid], 0, config::xapi_batch_size());
             }
 
             if (empty($records)) {
                 return;
             }
 
+            $firstid = $records[array_key_last($records)]->id;
+
             $statements = array_map(function ($record) {
                 return json_decode($record->statement);
             }, $records);
 
-            self::send($lrsnum, $statements);
-            
-            $ids = array_map(function ($record) {
-                return $record->id;
-            }, $records);
+            try {
+                self::send($lrsnum, $statements);
+            } catch (lrs_client_exception $e) {
+                // We don't want to abort the process. There will be an error log.
+                self::update_queue_items($records);
+                continue;
+            } catch (lrs_response_exception $e) {
+                // We don't want to abort the process. There will be an error log.
+                self::update_queue_items($records, $e->client_response->code);
+                continue;
+            } catch (\Exception $e) {
+                // Unwaited exception. We want to see what happens because there is no log for that.
+                throw $e;
+            }
 
-            $DB->delete_records_select('block_trax_xapi_client_queue', 'id IN (' . implode(',', $ids) . ')');
-
+            self::delete_queue_items($records);
             self::update_client_status($lrsnum);
         }        
+    }
+
+    /**
+     * Clear the queue of statements for a given LRS.
+     *
+     * @param int $lrsnum
+     * @param int $courseid
+     * @return void
+     */
+    public static function clear_lrs(int $lrsnum, int $courseid = null) {
+        global $DB;
+        if (isset($courseid)) {
+            $DB->delete_records('block_trax_xapi_client_queue', ['lrs' => $lrsnum, 'courseid' => $courseid, 'status' => self::STATUS_PENDING]); 
+        } else {
+            $DB->delete_records('block_trax_xapi_client_queue', ['lrs' => $lrsnum, 'status' => self::STATUS_PENDING]); 
+        }
+    }
+
+    /**
+     * Clear the errors for a given LRS.
+     *
+     * @param int $lrsnum
+     * @return void
+     */
+    public static function clear_lrs_errors(int $lrsnum) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+
+        errors::delete_client_logs($lrsnum);
+        $DB->delete_records('block_trax_xapi_client_queue', ['lrs' => $lrsnum, 'status' => self::STATUS_ERROR_CLIENT]);
+        $DB->delete_records('block_trax_xapi_client_queue', ['lrs' => $lrsnum, 'status' => self::STATUS_ERROR_LRS]);
+
+        $transaction->allow_commit();
     }
 
     /**
@@ -153,7 +245,8 @@ class client {
      * @param int $lrsnum
      * @param array $statements
      * @return void
-     * @throws \block_trax_xapi\exceptions\client_exception
+     * @throws \block_trax_xapi\exceptions\lrs_client_exception
+     * @throws \block_trax_xapi\exceptions\lrs_response_exception
      */
     public static function send(int $lrsnum, array $statements) {
         $statements = array_values($statements);
@@ -164,15 +257,60 @@ class client {
             $response = $lrs->statements()->post($statements);
         } catch (\Exception $e) {
             // Error from the HTTP client.
-            errors::log_http_error($lrsnum, $lrs->endpoint(), 'statements', 'post', $statements, $lrs->headers(), $e);
-            throw new client_exception();
+            errors::log_lrs_client_error($lrsnum, $lrs->endpoint(), 'statements', 'post', $statements, $lrs->headers(), $e);
+            throw new lrs_client_exception($lrsnum, $lrs->endpoint(), 'statements', 'post', $statements, $lrs->headers(), $e);
         }
 
         // Error returned from the LRS.
         if ($response->code >= 400) {
-            errors::log_lrs_error($lrsnum, 'statements', 'post', $statements, $response);
-            throw new client_exception();
+            errors::log_lrs_response_error($lrsnum, $lrs->endpoint(), 'statements', 'post', $statements, $response);
+            throw new lrs_response_exception($lrsnum, $lrs->endpoint(), 'statements', 'post', $statements, $response);
         }
+    }
+
+    /**
+     * Update the queue of statements with a given error code.
+     *
+     * @param array $records
+     * @param int $code
+     * @return void
+     */
+    protected static function update_queue_items(array $records, int $code = 0) {
+        global $DB;
+
+        $ids = array_map(function ($record) {
+            return $record->id;
+        }, $records);
+
+        $transaction = $DB->start_delegated_transaction();
+
+        $DB->delete_records_select('block_trax_xapi_client_queue', 'id IN (' . implode(',', $ids) . ')');
+
+        $records = array_map(function ($record) use ($code) {
+            $record->status = $code == 0 ? self::STATUS_ERROR_CLIENT : self::STATUS_ERROR_LRS;
+            $record->error = $code;
+            return $record;
+        }, $records);
+
+        $DB->insert_records('block_trax_xapi_client_queue', $records);
+
+        $transaction->allow_commit();
+    }
+
+    /**
+     * Delete the queue of statements.
+     *
+     * @param array $records
+     * @return void
+     */
+    protected static function delete_queue_items(array $records) {
+        global $DB;
+
+        $ids = array_map(function ($record) {
+            return $record->id;
+        }, $records);
+
+        $DB->delete_records_select('block_trax_xapi_client_queue', 'id IN (' . implode(',', $ids) . ')');
     }
 
     /**
@@ -181,7 +319,7 @@ class client {
      * @param int $lrsnum
      * @return void
      */
-    public static function update_client_status(int $lrsnum) {
+    protected static function update_client_status(int $lrsnum) {
         global $DB;
 
         if (!$status = $DB->get_record('block_trax_xapi_client_status', ['lrs' => $lrsnum])) {

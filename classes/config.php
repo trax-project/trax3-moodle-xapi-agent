@@ -27,6 +27,7 @@ namespace block_trax_xapi;
 defined('MOODLE_INTERNAL') || die();
 
 use block_trax_xapi\modelers\events;
+use block_trax_xapi\exceptions\dev_tools_exception;
 use context_course;
 
 class config {
@@ -563,6 +564,44 @@ class config {
     }
 
     /**
+     * Get the index of course configs for SCORM.
+     *
+     * @param int $lrs
+     * @return array
+     */
+    public static function lrs_course_configs(int $lrs) {
+        global $DB;
+        
+        // Get all the TRAX xAPI blocks and there configs.
+        $block_instance_records = $DB->get_records('block_instances', ['blockname' => 'trax_xapi']);
+
+        // Extract all the configs indexed by their context IDs.
+        $configs_by_context_ids = [];
+        foreach ($block_instance_records as $block_instance_record) {
+            $config = block_instance('trax_xapi', $block_instance_record)->config;
+            if (!empty($config->lrs)
+                && $config->lrs == $lrs
+            ) {
+                $configs_by_context_ids[$block_instance_record->parentcontextid] = $config;
+            }
+        }
+
+        // Get all the contexts.
+        $contexts = $DB->get_records_list('context', 'id', array_keys($configs_by_context_ids));
+
+        // Now, fill the course configs.
+        $course_configs = [];
+        foreach ($contexts as $context) {
+            $course_configs[$context->instanceid] = $configs_by_context_ids[$context->id];
+            $course = $DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
+            $course_configs[$context->instanceid]->courseid = $course->id;
+            $course_configs[$context->instanceid]->coursename = $course->fullname;
+        }
+
+        return $course_configs;
+    }
+
+    /**
      * Check if the live events are supported at the system level.
      *
      * @return bool
@@ -605,12 +644,52 @@ class config {
     }
 
     /**
-     * Batch size
+     * Is the user allowed to manage this plugin?
      *
      * @return bool
      */
+    public static function is_admin() {
+        return has_capability('moodle/site:config', \core\context\system::instance());
+    }
+
+    /**
+     * Require the admin permission.
+     *
+     * @return void
+     * @throw \required_capability_exception
+     */
+    public static function require_admin() {
+        require_capability('moodle/site:config', \core\context\system::instance());
+    }
+    
+    /**
+     * Is the user allowed to manage this plugin?
+     *
+     * @return bool
+     */
+    public static function is_authorized_teacher($context) {
+        return has_capability('block/trax_xapi:addinstance', $context);
+    }
+
+    /**
+     * Require dev tools
+     *
+     * @return void
+     * @throw \block_trax_xapi\exceptions\dev_tools_exception
+     */
+    public static function require_dev_tools() {
+        if (!self::dev_tools_enabled()) {
+            throw new dev_tools_exception;
+        }
+    }
+
+    /**
+     * Batch size
+     *
+     * @return int
+     */
     public static function xapi_batch_size() {
-        return 100;
+        return get_config('block_trax_xapi', 'lrs_batch_size');
     }
 }
 

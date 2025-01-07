@@ -14,6 +14,8 @@ Open the Moodle administration page and confirm the installation of the plugin.
 
 Please, check the [configuration](./docs/configuration.md) page to see how to configure this plugin.
 
+Please, check the [permissions](./docs/permissions.md) page to understand how permissions work with this plugin.
+
 ## xAPI profile
 
 This plugin generates statements conforming with this [VLE xAPI profile](./docs/xapi-profile.md).

@@ -22,17 +22,23 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require('../../../config.php');
+use block_trax_xapi\config;
+use block_trax_xapi\client;
 
+require('../../../config.php');
 require_login();
 
-$courseid = required_param('courseid', PARAM_INT);
+// URL params.
+
 $lrs = required_param('lrs', PARAM_INT);
 $returnurl = required_param('returnurl', PARAM_URL);
 
-$DB->delete_records('block_trax_xapi_errors', [
-    'courseid' => null,
-    'lrs' => $lrs,
-]);
+// Page setup.
+
+config::require_admin();
+
+// Action.
+
+client::clear_lrs_errors($lrs);
 
 redirect($returnurl);

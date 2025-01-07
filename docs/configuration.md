@@ -152,10 +152,10 @@ By default, this local plugin is named **trax_xapi_custom**, but you are free to
 
 **Dev tools**
 
-Currently, this consists in giving access to a test page from the xAPI block (site admin only).
+This consists in giving access to test functions in the status pages.
 
 
-## Course block
+## Course block configuration
 
 In order to track a course with xAPI, you must first create a **TRAX xAPI Agent** block in this course and configure it properly with the following options.
 
@@ -182,4 +182,3 @@ When choosing **Events collected from the log store**, you have to define the da
 With this option, you can enable the conversion of SCORM data recorded by Moodle.
 
 When enabling SCORM data, you have to define the date of the first attempt to take into account, with the **SCORM attempts since** field. 
-

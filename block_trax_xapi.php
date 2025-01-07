@@ -26,9 +26,6 @@ use block_trax_xapi\config;
 
 require_once($CFG->dirroot . '/lib/weblib.php');
 
-use block_trax_xapi\client;
-use block_trax_xapi\errors;
-
 class block_trax_xapi extends block_base {
 
     /**
@@ -71,7 +68,7 @@ class block_trax_xapi extends block_base {
      * @return string
      */
     public function get_content() {
-        global $COURSE, $DB;
+        global $COURSE;
 
         if ($this->content !== null) {
             return $this->content;
@@ -101,131 +98,14 @@ class block_trax_xapi extends block_base {
         // Selected LRS.
         $this->content->text = '<p>'.get_string('course_lrs_'.$this->config->lrs, 'block_trax_xapi').'</p>';
       
-        // Events mode.
-        $this->content->text .= '<hr>';
-        $this->content->text .= '<p>'.get_string('course_events_mode_'.$this->config->events_mode, 'block_trax_xapi', $this->config->logs_from).'</p>';
-
-        // Log store mode.
-        if ($this->config->events_mode == config::EVENTS_MODE_LOGS) {
-            // Get the log status.
-            if ($status = $DB->get_record('block_trax_xapi_logs_status', [
+        $this->content->text .= '<p class="">';
+        $this->content->text .= '
+            <a class="btn btn-secondary" href=" ' . new moodle_url("/blocks/trax_xapi/views/course_status.php", [
                 'courseid' => $COURSE->id,
-                'lrs' => $this->config->lrs
-            ])) {
-                $this->content->text .= '<p class="mb-2 text-success">'.get_string('logs_status_last_run', 'block_trax_xapi', userdate($status->timestamp, "%d/%m/%Y at %H:%M")).'</p>';
-
-                $url = (new moodle_url("/blocks/trax_xapi/actions/replay_logs.php", [
-                        'courseid' => $COURSE->id,
-                        'lrs' => $this->config->lrs,
-                        'returnurl' => $this->page->url->__toString()
-                    ]))->__toString();
-
-                $this->content->text .= '
-                    <div class="mb-3">
-                        <a href="' . $url . '" class="btn btn-secondary">
-                        ' . get_string('logs_status_replay', 'block_trax_xapi') . '
-                        </a>
-                    </div>
-                ';
-            } else {
-                $this->content->text .= '<p class="text-warning">'.get_string('logs_status_never_run', 'block_trax_xapi').'</p>';
-            }
-        }
-
-        // SCORM mode.
-        $this->content->text .= '<hr>';
-        $this->content->text .= '<p>'.get_string('course_scorm_enabled_'.$this->config->scorm_enabled, 'block_trax_xapi', $this->config->scorm_from).'</p>';
-
-        // SCORM data.
-        if ($this->config->scorm_enabled == config::SCORM_ENABLED) {
-            // Get the log status.
-            if ($status = $DB->get_record('block_trax_xapi_scorm_status', [
-                'courseid' => $COURSE->id,
-                'lrs' => $this->config->lrs
-            ])) {
-                $this->content->text .= '<p class="mb-2 text-success">'.get_string('scorm_status_last_run', 'block_trax_xapi', userdate($status->timestamp, "%d/%m/%Y at %H:%M")).'</p>';
-
-                $url = (new moodle_url("/blocks/trax_xapi/actions/replay_scorm.php", [
-                        'courseid' => $COURSE->id,
-                        'lrs' => $this->config->lrs,
-                        'returnurl' => $this->page->url->__toString()
-                    ]))->__toString();
-
-                $this->content->text .= '
-                    <div class="mb-3">
-                        <a href="' . $url . '" class="btn btn-secondary">
-                        ' . get_string('scorm_status_replay', 'block_trax_xapi') . '
-                        </a>
-                    </div>
-                ';
-            } else {
-                $this->content->text .= '<p class="text-warning">'.get_string('scorm_status_never_run', 'block_trax_xapi').'</p>';
-            }
-        }
-
-        // Client status.
-        if ($this->config->events_mode == config::EVENTS_MODE_LOGS || $this->config->scorm_enabled == config::SCORM_ENABLED) {
-            $this->content->text .= '<hr>';
-            if ($count = client::queue_size($this->config->lrs, $COURSE->id)) {
-                $this->content->text .= '<p>'.get_string('client_status_n', 'block_trax_xapi', $count).'</p>';
-            } else {
-                $this->content->text .= '<p>'.get_string('client_status_0', 'block_trax_xapi').'</p>';
-            }
-
-            // Get the client status.
-            if ($status = $DB->get_record('block_trax_xapi_client_status', [
-                'lrs' => $this->config->lrs
-            ])) {
-                $this->content->text .= '<p class="mb-2 text-success">'.get_string('client_task_last_run', 'block_trax_xapi', userdate($status->timestamp, "%d/%m/%Y at %H:%M")).'</p>';
-            } else if ($count) {
-                $this->content->text .= '<p class="text-warning">'.get_string('client_task_never_run', 'block_trax_xapi').'</p>';
-            }
-        }
-
-        // Show errors.
-        $modelingErrors = errors::count_modeling_errors($this->config->lrs, $COURSE->id);
-        $clientErrors = errors::count_client_errors($this->config->lrs);
-        if ($modelingErrors || $clientErrors) {
-            $this->content->text .= '<hr>';
-        }
-        if ($modelingErrors) {
-            $this->content->text .= '<p class="text-danger">
-                <a href=" ' . new moodle_url("/blocks/trax_xapi/views/course_modeling_errors.php", [
-                    'courseid' => $COURSE->id,
-                    'lrs' => $this->config->lrs,
-                    'returnurl' => $this->page->url->__toString()
-                ]) . '
-                " class="text-danger">
-                    '.get_string('modeling_errors_notice', 'block_trax_xapi', $modelingErrors).'
-                </a>
-            </p>';
-        }
-        if ($clientErrors) {
-            $this->content->text .= '<p class="text-danger">
-                <a href=" ' . new moodle_url("/blocks/trax_xapi/views/client_errors.php", [
-                    'courseid' => $COURSE->id,
-                    'lrs' => $this->config->lrs,
-                    'returnurl' => $this->page->url->__toString()
-                ]) . '
-                " class="text-danger">
-                    '.get_string('client_errors_notice', 'block_trax_xapi', $clientErrors).'
-                </a>
-            </p>';
-        }
-
-        // Test.
-        if (is_siteadmin() && config::dev_tools_enabled()) {
-            $this->content->text .= '<hr>';
-            $this->content->text .= '<p><b>Tools for developers:</b></p>';
-            $this->content->text .= '<p class="">
-                <a class="btn btn-secondary" href=" ' . new moodle_url("/blocks/trax_xapi/views/course_test.php", [
-                    'courseid' => $COURSE->id,
-                    'lrs' => $this->config->lrs,
-                    'returnurl' => $this->page->url->__toString()
-                ]) . '
-                " class="">Test page</a>
-            </p>';
-        }
+                'lrs' => $this->config->lrs,
+            ]) . '
+            ">'.get_string('more_details', 'block_trax_xapi').'</a>';
+        $this->content->text .= '</p>';
 
         return $this->content;
     }

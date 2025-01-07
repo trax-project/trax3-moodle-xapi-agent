@@ -30,25 +30,24 @@ use block_trax_xapi\config;
 use block_trax_xapi\selector;
 use block_trax_xapi\converter;
 use block_trax_xapi\client;
-use block_trax_xapi\exceptions\client_exception;
+use block_trax_xapi\errors;
 
 class scanner {
 
     /**
      * Run the log store scanner.
      *
+     * @param int $lrs
      * @param int $courseid
      * @return void
      */
-    public static function run(int $courseid = null) {
+    public static function run(int $lrs = null, int $courseid = null) {
         
         // First, system level events.
         if (!isset($courseid) || $courseid == 0) {
             $config = config::system_events_config();
-            try {
+            if (!isset($lrs) || $lrs == $config->lrs) {
                 self::scan_course_logs(0, $config);
-            } catch (client_exception $e) {
-                return;
             }
         }
 
@@ -57,12 +56,52 @@ class scanner {
             if (isset($courseid) && $courseid != $id) {
                 continue;
             }
-            try {
-                self::scan_course_logs($id, $config);
-            } catch (client_exception $e) {
+            if (isset($lrs) && $lrs != $config->lrs) {
+                continue;
+            }
+            self::scan_course_logs($id, $config);
+        }
+    }
+
+    /**
+     * Retry failed events.
+     *
+     * @param int $lrs
+     * @param int $courseid
+     * @return void
+     */
+    public static function retry(int $lrs, int $courseid = null) {
+        global $DB;
+
+        $firstid = 0;
+        if (!$lastlog = errors::get_event_last_log($lrs, $courseid)) {
+            return;
+        }
+        $lastid = $lastlog->id;
+
+        while (1) {
+            $logs = errors::get_event_logs_batch($lrs, $courseid, $firstid, $lastid);
+
+            // No more errors. Exit.
+            if (empty($logs)) {
                 return;
             }
-        }
+
+            // Convert the events.
+            foreach ($logs as $log) {
+                $data = json_decode($log->data);
+
+                $transaction = $DB->start_delegated_transaction();
+
+                errors::delete_log($log->id);
+                $statements = converter::convert_events([$data->source], $log->lrs, $log->courseid);
+                client::queue($log->lrs, $log->courseid, $statements);
+
+                $transaction->allow_commit();
+            }
+
+            $firstid = end($logs)->id;
+        }        
     }
 
     /**
@@ -115,19 +154,21 @@ class scanner {
             return;
         }
 
+        $transaction = $DB->start_delegated_transaction();
+
         // Convert the events.
         $statements = converter::convert_events($filtered_events, $config->lrs, $courseid);
 
         // Send the statements.
-        if (count($statements) > 0) {
-            client::queue($config->lrs, $courseid, $statements);
-        }
+        client::queue($config->lrs, $courseid, $statements);
 
         // Update the status.
         $last_event = end($events);
         $status->lastevent = $last_event->id;
         $status->timestamp = time();
         $DB->update_record('block_trax_xapi_logs_status', $status);
+
+        $transaction->allow_commit();
 
         // Continue: we got some events so they may be others to process.
         // The statements list may have been empty due to modeler skippings.

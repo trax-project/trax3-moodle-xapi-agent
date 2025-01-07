@@ -38,13 +38,13 @@ class sco_interacted extends base {
     /**
      * Get an xAPI statement, given SCORM interaction data.
      *
-     * @param object $data
-     * @param mixed $optdata
+     * @param object $attempt
+     * @param mixed $interaction
      * @return object
      */
-    public function statement($data, $optdata = null) {
-        $this->interaction = $optdata;
-        return parent::statement($data);
+    public function statement($attempt, $interaction = null) {
+        $this->interaction = $interaction;
+        return parent::statement($attempt, $interaction);
     }
 
     /**

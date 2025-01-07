@@ -23,7 +23,6 @@
  */
 
 use block_trax_xapi\config;
-use block_trax_xapi\errors;
 
 require('../../../config.php');
 require_login();
@@ -41,7 +40,13 @@ config::require_admin();
 
 // Action.
 
-$method = 'delete_'.$source.'_logs';
-errors::$method($lrs, $courseid);
+if ($source == 'event') {
+    $classname = \block_trax_xapi\sources\logs\scanner::class;
+}
+if ($source == 'scorm') {
+    $classname = \block_trax_xapi\sources\scorm\scanner::class;
+}
+
+$classname::retry($lrs, $courseid);
 
 redirect($returnurl);

@@ -23,12 +23,22 @@
  */
 
 require('../../../config.php');
-
 require_login();
+
+// URL params.
 
 $courseid = required_param('courseid', PARAM_INT);
 $lrs = required_param('lrs', PARAM_INT);
 $returnurl = required_param('returnurl', PARAM_URL);
+
+// Page setup.
+
+$course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+$PAGE->set_course($course);
+$context = $PAGE->context;
+require_capability('block/trax_xapi:addinstance', $context);
+
+// Action.
 
 $transaction = $DB->start_delegated_transaction();
 

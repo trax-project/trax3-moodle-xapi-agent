@@ -35,12 +35,21 @@ class statement_received extends modeler {
      * Get an xAPI statement, given a Moodle event.
      *
      * @param \core\event\base|object $event
-     * @return array
+     * @param mixed $optdata
+     * @return object
      */
-    public function statement($event) {
+    public function statement($event, $optdata = null) {
         $this->event = $event;
 
 		$statement = $event->other;
+
+		if (is_string($statement)) {
+			$statement = json_decode($statement, true);
+		}
+
+		if (is_object($statement)) {
+			$statement = json_decode(json_encode($statement), true);
+		}
 
 		// Be sure to have context activities.
 		if (!isset($statement['context'])) {
@@ -91,7 +100,7 @@ class statement_received extends modeler {
 			]
 		];
 
-        return (object)['error' => self::ERROR_NO, 'event' => $event, 'statement' => $statement];
+        return (object)['error' => self::ERROR_NO, 'source' => $event, 'optsource' => $optdata, 'statement' => $statement];
 	}
 
     /**

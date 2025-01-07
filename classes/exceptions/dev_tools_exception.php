@@ -22,26 +22,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use block_trax_xapi\config;
-use block_trax_xapi\errors;
+namespace block_trax_xapi\exceptions;
 
-require('../../../config.php');
-require_login();
+defined('MOODLE_INTERNAL') || die();
 
-// URL params.
+use Exception;
 
-$source = required_param('source', PARAM_TEXT);
-$courseid = required_param('courseid', PARAM_INT);
-$lrs = required_param('lrs', PARAM_INT);
-$returnurl = required_param('returnurl', PARAM_URL);
-
-// Page setup.
-
-config::require_admin();
-
-// Action.
-
-$method = 'delete_'.$source.'_logs';
-errors::$method($lrs, $courseid);
-
-redirect($returnurl);
+class dev_tools_exception extends Exception {
+}

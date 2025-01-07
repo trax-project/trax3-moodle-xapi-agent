@@ -23,15 +23,13 @@
  */
 
 use block_trax_xapi\config;
-use block_trax_xapi\errors;
+use block_trax_xapi\client;
 
 require('../../../config.php');
 require_login();
 
 // URL params.
 
-$source = required_param('source', PARAM_TEXT);
-$courseid = required_param('courseid', PARAM_INT);
 $lrs = required_param('lrs', PARAM_INT);
 $returnurl = required_param('returnurl', PARAM_URL);
 
@@ -41,7 +39,6 @@ config::require_admin();
 
 // Action.
 
-$method = 'delete_'.$source.'_logs';
-errors::$method($lrs, $courseid);
+client::retry_lrs($lrs);
 
 redirect($returnurl);

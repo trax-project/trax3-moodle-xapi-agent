@@ -62,38 +62,42 @@ abstract class base extends modeler {
     /**
      * Get an xAPI statement, given a SCORM attempt.
      *
-     * @param object $data
+     * @param object $attempt
      * @param mixed $optdata
      * @return object
      */
-    public function statement($data, $optdata = null) {
-        $this->attempt = $data;
+    public function statement($attempt, $optdata = null) {
+        $this->attempt = $attempt;
+
+        if (isset($this->attempt->values) && !is_array($this->attempt->values)) {
+            $this->attempt->values = (array)$this->attempt->values;
+        }
 
         // Get the right template.
         if (!$template = $this->template()) {
-            return (object)['error' => self::ERROR_IGNORE, 'source' => $data, 'template' => null];
+            return (object)['error' => self::ERROR_IGNORE, 'source' => $attempt, 'optsource' => $optdata, 'template' => null];
         }
 
         // Open the template.
         if (!$content = $this->templateContents($template)) {
-            return (object)['error' => self::ERROR_TEMPLATE_FILE, 'source' => $data, 'template' => $template];
+            return (object)['error' => self::ERROR_TEMPLATE_FILE, 'source' => $attempt, 'optsource' => $optdata, 'template' => $template];
         }
 
         // Parse the JSON.
         if (!$json = json_decode($content, true)) {
-            return (object)['error' => self::ERROR_TEMPLATE_JSON, 'source' => $data, 'template' => $template];
+            return (object)['error' => self::ERROR_TEMPLATE_JSON, 'source' => $attempt, 'optsource' => $optdata, 'template' => $template];
         }
 
         // Fill placeholders.
         try {
             $statement = $this->fill_placeholders($json);
         } catch (ignore_event_exception $e) {
-            return (object)['error' => self::ERROR_IGNORE, 'source' => $data, 'template' => $template];
+            return (object)['error' => self::ERROR_IGNORE, 'source' => $attempt, 'optsource' => $optdata, 'template' => $template];
         } catch (\Exception $e) {
-            return (object)['error' => self::ERROR_PLACEHOLDER, 'source' => $data, 'template' => $template, 'exception' => $e];
+            return (object)['error' => self::ERROR_PLACEHOLDER, 'source' => $attempt, 'optsource' => $optdata, 'template' => $template, 'exception' => $e];
         }
 
-        return (object)['error' => self::ERROR_NO, 'source' => $data, 'template' => $template, 'statement' => $statement];
+        return (object)['error' => self::ERROR_NO, 'source' => $attempt, 'optsource' => $optdata, 'template' => $template, 'statement' => $statement];
     }
 
     /**

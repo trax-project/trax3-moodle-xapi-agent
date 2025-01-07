@@ -36,7 +36,7 @@ class errors {
     /**
      * HTTP error.
      */
-    const ERROR_HTTP = 2;
+    const ERROR_CLIENT = 2;
 
     /**
      * LRS error.
@@ -46,28 +46,32 @@ class errors {
     /**
      * Log a modeling error.
      *
-     * @param string $type
+     * @param int $source
      * @param int $lrsnum
      * @param int $courseid
-     * @param \core\event\base|object $source
+     * @param \core\event\base|object $sourcedata
+     * @param mixed $optsourcedata
+     * @param string $eventname
      * @param string $template
      * @param int $error
      * @param \Exception $e
      * @return void
      */
-    public static function log_modeling_error(string $type, int $lrsnum, int $courseid, object $source, string $template, int $error, \Exception $exception = null) {
+    public static function log_modeling_error(int $source, int $lrsnum, int $courseid, object $sourcedata, mixed $optsourcedata, string $eventname, string $template, int $error, \Exception $exception = null) {
         global $DB;
 
-        $source = get_class($source) == 'stdClass' ? $source : $source->get_data();
+        $sourcedata = get_class($sourcedata) == 'stdClass' ? $sourcedata : $sourcedata->get_data();
         
         $DB->insert_record('block_trax_xapi_errors', [
             'lrs' => $lrsnum,
             'type' => self::ERROR_MODELING,
             'error' => $error,
+            'source' => $source,
             'data' => json_encode([
-                'type' => $type,
+                'source' => $sourcedata,
+                'optsource' => $optsourcedata,
+                'eventname' => $eventname,
                 'template' => $template,
-                'source' => $source,
                 'exception' => $exception,
             ]),
             'courseid' => $courseid,
@@ -87,12 +91,13 @@ class errors {
      * @param \Exception $e
      * @return void
      */
-    public static function log_http_error(int $lrsnum, string $endpoint, string $api, string $method, mixed $data, array $headers, \Exception $exception = null) {
+    public static function log_lrs_client_error(int $lrsnum, string $endpoint, string $api, string $method, mixed $data, array $headers, \Exception $exception = null) {
         global $DB;
         $DB->insert_record('block_trax_xapi_errors', [
             'lrs' => $lrsnum,
-            'type' => self::ERROR_HTTP,
+            'type' => self::ERROR_CLIENT,
             'error' => 0,
+            'source' => null,
             'data' => json_encode([
                 'endpoint' => $endpoint,
                 'api' => $api,
@@ -101,6 +106,7 @@ class errors {
                 'headers' => $headers,
                 'exception' => $exception,
             ]),
+            'courseid' => null,
             'timestamp' => time(),
         ]);
     }
@@ -109,41 +115,61 @@ class errors {
      * Log an LRS error.
      *
      * @param int $lrsnum
+     * @param string $endpoint
      * @param string $api
      * @param string $method
      * @param mixed $data
      * @param object $client_response
      * @return void
      */
-    public static function log_lrs_error(int $lrsnum, string $api, string $method, mixed $data, object $client_response) {
+    public static function log_lrs_response_error(int $lrsnum, string $endpoint, string $api, string $method, mixed $data, object $client_response) {
         global $DB;
         $DB->insert_record('block_trax_xapi_errors', [
             'lrs' => $lrsnum,
             'type' => self::ERROR_LRS,
             'error' => $client_response->code,
+            'source' => null,
             'data' => json_encode([
+                'endpoint' => $endpoint,
                 'api' => $api,
                 'method' => $method,
                 'data' => $data,
                 'response' => $client_response,
             ]),
+            'courseid' => null,
             'timestamp' => time(),
         ]);
     }
 
     /**
-     * Count modeling errors.
+     * Count event modeling errors.
      *
      * @param int $lrsnum
      * @param int $courseid
      * @return int
      */
-    public static function count_modeling_errors(int $lrsnum, int $courseid = null) {
+    public static function count_event_modeling_errors(int $lrsnum, int $courseid = null) {
         global $DB;
         if (isset($courseid)) {
-            return $DB->get_records('block_trax_xapi_errors', ['courseid' => $courseid, 'lrs' => $lrsnum, 'type' => self::ERROR_MODELING]);
+            return $DB->count_records('block_trax_xapi_errors', ['source' => converter::SOURCE_EVENT, 'courseid' => $courseid, 'lrs' => $lrsnum, 'type' => self::ERROR_MODELING]);
         } else {
-            return $DB->get_records('block_trax_xapi_errors', ['lrs' => $lrsnum, 'type' => self::ERROR_MODELING]);
+            return $DB->count_records('block_trax_xapi_errors', ['source' => converter::SOURCE_EVENT, 'lrs' => $lrsnum, 'type' => self::ERROR_MODELING]);
+        }
+    }
+
+    /**
+     * Count scorm modeling errors.
+     *
+     * @param int $lrsnum
+     * @param int $courseid
+     * @return int
+     */
+    public static function count_scorm_modeling_errors(int $lrsnum, int $courseid = null) {
+        global $DB;
+        if (isset($courseid)) {
+            return $DB->count_records('block_trax_xapi_errors', ['source' => converter::SOURCE_SCORM, 'courseid' => $courseid, 'lrs' => $lrsnum, 'type' => self::ERROR_MODELING]);
+        } else {
+            return $DB->count_records('block_trax_xapi_errors', ['source' => converter::SOURCE_SCORM, 'lrs' => $lrsnum, 'type' => self::ERROR_MODELING]);
         }
     }
 
@@ -155,7 +181,7 @@ class errors {
      */
     public static function count_client_errors(int $lrsnum) {
         global $DB;
-        return $DB->get_records('block_trax_xapi_errors', ['courseid' => null, 'lrs' => $lrsnum]);
+        return $DB->count_records('block_trax_xapi_errors', ['courseid' => null, 'lrs' => $lrsnum]);
     }
 
     /**
@@ -165,13 +191,56 @@ class errors {
      * @param int $courseid
      * @return void
      */
-    public static function delete_logs(int $lrsnum, int $courseid = null) {
+    public static function delete_event_logs(int $lrsnum, int $courseid = null) {
         global $DB;
         if (isset($courseid)) {
-            return $DB->delete_records('block_trax_xapi_errors', ['courseid' => $courseid, 'lrs' => $lrsnum]);
+            return $DB->delete_records('block_trax_xapi_errors', ['source' => converter::SOURCE_EVENT, 'courseid' => $courseid, 'lrs' => $lrsnum]);
         } else {
-            return $DB->delete_records('block_trax_xapi_errors', ['lrs' => $lrsnum]);
+            return $DB->delete_records('block_trax_xapi_errors', ['source' => converter::SOURCE_EVENT, 'lrs' => $lrsnum]);
         }
+    }
+
+    /**
+     * Delete errors.
+     *
+     * @param int $lrsnum
+     * @param int $courseid
+     * @return void
+     */
+    public static function delete_scorm_logs(int $lrsnum, int $courseid = null) {
+        global $DB;
+        if (isset($courseid)) {
+            return $DB->delete_records('block_trax_xapi_errors', ['source' => converter::SOURCE_SCORM, 'courseid' => $courseid, 'lrs' => $lrsnum]);
+        } else {
+            return $DB->delete_records('block_trax_xapi_errors', ['source' => converter::SOURCE_SCORM, 'lrs' => $lrsnum]);
+        }
+    }
+
+    /**
+     * Delete errors.
+     *
+     * @param int $lrsnum
+     * @return void
+     */
+    public static function delete_client_logs(int $lrsnum) {
+        global $DB;
+        $DB->delete_records('block_trax_xapi_errors', [
+            'courseid' => null,
+            'lrs' => $lrsnum,
+        ]);
+    }
+
+    /**
+     * Delete errors.
+     *
+     * @param int $id
+     * @return void
+     */
+    public static function delete_log(int $id) {
+        global $DB;
+        $DB->delete_records('block_trax_xapi_errors', [
+            'id' => $id,
+        ]);
     }
 
     /**
@@ -181,12 +250,206 @@ class errors {
      * @param int $courseid
      * @return array
      */
-    public static function get_logs(int $lrsnum, int $courseid = null) {
+    public static function get_event_logs(int $lrsnum, int $courseid = null) {
+        return self::get_logs(converter::SOURCE_EVENT, $lrsnum, $courseid);
+    }
+
+    /**
+     * Get errors.
+     *
+     * @param int $lrsnum
+     * @param int $courseid
+     * @return array
+     */
+    public static function get_scorm_logs(int $lrsnum, int $courseid = null) {
+        return self::get_logs(converter::SOURCE_SCORM, $lrsnum, $courseid);
+    }
+
+    /**
+     * Get errors.
+     *
+     * @param int $lrsnum
+     * @return array
+     */
+    public static function get_client_logs(int $lrsnum) {
+        global $DB;
+        return array_reverse(
+            $DB->get_records('block_trax_xapi_errors', ['courseid' => null, 'lrs' => $lrsnum])
+        );
+    }
+
+    /**
+     * Get errors.
+     *
+     * @param int $lrsnum
+     * @param int $courseid
+     * @return object|false
+     */
+    public static function get_event_last_log(int $lrsnum, int $courseid = null) {
+        return self::get_last_log(converter::SOURCE_EVENT, $lrsnum, $courseid);
+    }
+
+    /**
+     * Get errors.
+     *
+     * @param int $lrsnum
+     * @param int $courseid
+     * @return object|false
+     */
+    public static function get_scorm_last_log(int $lrsnum, int $courseid = null) {
+        return self::get_last_log(converter::SOURCE_SCORM, $lrsnum, $courseid);
+    }
+
+    /**
+     * Get errors.
+     *
+     * @param int $lrsnum
+     * @param int $courseid
+     * @param int $fromid
+     * @param int $toid
+     * @return array
+     */
+    public static function get_event_logs_batch(int $lrsnum, int $courseid = null, int $fromid = 0, int $toid = 0) {
+        return self::get_logs_batch(converter::SOURCE_EVENT, $lrsnum, $courseid, $fromid, $toid);
+    }
+
+    /**
+     * Get errors.
+     *
+     * @param int $lrsnum
+     * @param int $courseid
+     * @param int $fromid
+     * @param int $toid
+     * @return array
+     */
+    public static function get_scorm_logs_batch(int $lrsnum, int $courseid = null, int $fromid = 0, int $toid = 0) {
+        return self::get_logs_batch(converter::SOURCE_SCORM, $lrsnum, $courseid, $fromid, $toid);
+    }
+
+    /**
+     * Get errors.
+     *
+     * @param int $source
+     * @param int $lrsnum
+     * @param int $courseid
+     * @return array
+     */
+    protected static function get_logs(int $source, int $lrsnum, int $courseid = null) {
         global $DB;
         if (isset($courseid)) {
-            return $DB->get_records('block_trax_xapi_errors', ['courseid' => $courseid, 'lrs' => $lrsnum]);
+            return $DB->get_records_sql("
+                SELECT error.*
+                FROM {block_trax_xapi_errors} error
+                WHERE error.source = :source
+                    AND error.lrs = :lrs
+                    AND error.courseid = :courseid
+                ORDER BY error.id DESC
+            ", [
+                'source' => $source,
+                'lrs' => $lrsnum,
+                'courseid' => $courseid,
+            ]);
+
         } else {
-            return $DB->get_records('block_trax_xapi_errors', ['lrs' => $lrsnum]);
+            return $DB->get_records_sql("
+                SELECT error.*, course.id AS courseid, course.fullname AS coursename
+                FROM {block_trax_xapi_errors} error
+                JOIN {course} course ON error.courseid = course.id
+                WHERE error.source = :source
+                    AND error.lrs = :lrs
+                ORDER BY error.id DESC
+            ", [
+                'source' => $source,
+                'lrs' => $lrsnum,
+            ]);
+        }
+    }
+
+    /**
+     * Get errors.
+     *
+     * @param int $source
+     * @param int $lrsnum
+     * @param int $courseid
+     * @return object|false
+     */
+    protected static function get_last_log(int $source, int $lrsnum, int $courseid = null) {
+        global $DB;
+        if (isset($courseid)) {
+            $logs = $DB->get_records_sql("
+                SELECT error.*
+                FROM {block_trax_xapi_errors} error
+                WHERE error.source = :source
+                    AND error.lrs = :lrs
+                    AND error.courseid = :courseid
+                ORDER BY error.id DESC
+            ", [
+                'source' => $source,
+                'lrs' => $lrsnum,
+                'courseid' => $courseid,
+            ], 0, 1);
+        } else {
+            $logs = $DB->get_records_sql("
+                SELECT error.*
+                FROM {block_trax_xapi_errors} error
+                WHERE error.source = :source
+                    AND error.lrs = :lrs
+                ORDER BY error.id DESC
+            ", [
+                'source' => $source,
+                'lrs' => $lrsnum,
+            ], 0, 1);
+        }
+        if (empty($logs)) {
+            return false;
+        }
+        return end($logs);
+    }
+
+    /**
+     * Get errors.
+     *
+     * @param int $source
+     * @param int $lrsnum
+     * @param int $courseid
+     * @param int $fromid
+     * @param int $toid
+     * @return array
+     */
+    protected static function get_logs_batch(int $source, int $lrsnum, int $courseid = null, int $fromid = 0, int $toid = 0) {
+        global $DB;
+        if (isset($courseid)) {
+            return $DB->get_records_sql("
+                SELECT error.*
+                FROM {block_trax_xapi_errors} error
+                WHERE error.source = :source
+                    AND error.lrs = :lrs
+                    AND error.courseid = :courseid
+                    AND error.id > :fromid
+                    AND error.id <= :toid
+                ORDER BY error.id ASC
+            ", [
+                'source' => $source,
+                'lrs' => $lrsnum,
+                'courseid' => $courseid,
+                'fromid' => $fromid,
+                'toid' => $toid,
+            ], 0, 100);
+        } else {
+            return $DB->get_records_sql("
+                SELECT error.*
+                FROM {block_trax_xapi_errors} error
+                WHERE error.source = :source
+                    AND error.lrs = :lrs
+                    AND error.id > :fromid
+                    AND error.id <= :toid
+                ORDER BY error.id ASC
+            ", [
+                'source' => $source,
+                'lrs' => $lrsnum,
+                'fromid' => $fromid,
+                'toid' => $toid,
+            ], 0, 100);
         }
     }
 }

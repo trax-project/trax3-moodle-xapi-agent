@@ -32,6 +32,16 @@ use block_trax_xapi\modelers\base as modeler;
 class converter {
 
     /**
+     * Event source.
+     */
+    const SOURCE_EVENT = 1;
+
+    /**
+     * SCORM source.
+     */
+    const SOURCE_SCORM = 2;
+
+    /**
      * Process a list of events.
      *
      * @param array $events
@@ -56,26 +66,26 @@ class converter {
 
         }, $events);
 
-        return self::finalStatements($feedbacks, 'event', $lrsnum, $courseid);
+        return self::final_statements($feedbacks, self::SOURCE_EVENT, $lrsnum, $courseid);
     }
 
     /**
      * Process a list of SCORM attempts.
      *
      * @param array $attempts
-     * @param string $event
+     * @param string $eventname
      * @param int $lrsnum
      * @param int $courseid
      * @return array
      */
-    public static function convert_scorm_attempts(array $attempts, string $event, int $lrsnum, int $courseid) {
+    public static function convert_scorm_attempts(array $attempts, string $eventname, int $lrsnum, int $courseid) {
         
         // Statements modeling.
-        $feedbacks = array_map(function ($attempt) use ($event) {
-            return self::statement('\scorm\\sco_' . $event, $attempt);
+        $feedbacks = array_map(function ($attempt) use ($eventname) {
+            return self::statement('\scorm\\sco_' . $eventname, $attempt);
         }, $attempts);
 
-        return self::finalStatements($feedbacks, 'scorm_attempt', $lrsnum, $courseid);
+        return self::final_statements($feedbacks, self::SOURCE_SCORM, $lrsnum, $courseid, $eventname);
     }
 
     /**
@@ -95,7 +105,7 @@ class converter {
             return self::statement('\scorm\\sco_interacted', $attempt, $interaction);
         }, $interactions);
 
-        return self::finalStatements($feedbacks, 'scorm_interaction', $lrsnum, $courseid);
+        return self::final_statements($feedbacks, self::SOURCE_SCORM, $lrsnum, $courseid, 'interacted');
     }
 
     /**
@@ -118,7 +128,7 @@ class converter {
         }
         $modeler = new $modelerClass;
         if (!class_exists($modelerClass)) {
-            return (object)['error' => $modeler::ERROR_MODELER_FILE, 'data' => $data];
+            return (object)['error' => $modeler::ERROR_MODELER_FILE, 'source' => $data, 'optsource' => $optdata];
         }
         return (new $modelerClass)->statement($data, $optdata);
     }
@@ -127,17 +137,28 @@ class converter {
      * Get the final list of statements.
      *
      * @param array $feedbacks
-     * @param string $type
+     * @param int $source
      * @param int $lrsnum
      * @param int $courseid
+     * @param string $eventname
      * @return array
      */
-    protected static function finalStatements(array $feedbacks, string $type, int $lrsnum, int $courseid) {
+    protected static function final_statements(array $feedbacks, int $source, int $lrsnum, int $courseid, string $eventname = null) {
         // Filter the statements because the modelers may return errors.
-        $feedbacks = array_filter($feedbacks, function ($feedback) use ($type, $lrsnum, $courseid) {
+        $feedbacks = array_filter($feedbacks, function ($feedback) use ($source, $lrsnum, $courseid, $eventname) {
             // Log the error.
             if ($feedback->error && $feedback->error !== modeler::ERROR_IGNORE) {
-                errors::log_modeling_error($type, $lrsnum, $courseid, $feedback->source, $feedback->template, $feedback->error, isset($feedback->exception) ? $feedback->exception : null);
+                errors::log_modeling_error(
+                    $source,
+                    $lrsnum,
+                    $courseid,
+                    $feedback->source,
+                    $feedback->optsource,
+                    isset($eventname) ? $eventname : '',
+                    $feedback->template,
+                    $feedback->error,
+                    isset($feedback->exception) ? $feedback->exception : null
+                );
             }
             return !$feedback->error;
         });

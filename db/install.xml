@@ -27,6 +27,7 @@
             <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
             <FIELD NAME="lrs" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
             <FIELD NAME="type" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
+            <FIELD NAME="source" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
             <FIELD NAME="error" TYPE="int" LENGTH="4" UNSIGNED="true" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
             <FIELD NAME="data" TYPE="text" LENGTH="big" NOTNULL="true" SEQUENCE="false"/>
             <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -37,6 +38,7 @@
         <INDEXES>
             <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid"/>
             <INDEX NAME="lrs" UNIQUE="false" FIELDS="lrs"/>
+            <INDEX NAME="source" UNIQUE="false" FIELDS="source"/>
         </INDEXES>
     </TABLE>
 
@@ -100,7 +102,8 @@
             <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
             <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
             <FIELD NAME="lrs" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
-            <FIELD NAME="status" TYPE="int" LENGTH="4" UNSIGNED="true" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
+            <FIELD NAME="status" TYPE="int" LENGTH="4" UNSIGNED="true" NOTNULL="true" SEQUENCE="false"/>
+            <FIELD NAME="error" TYPE="int" LENGTH="4" UNSIGNED="true" NOTNULL="false" SEQUENCE="false"/>
             <FIELD NAME="statement" TYPE="text" LENGTH="big" NOTNULL="true" SEQUENCE="false"/>
             <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         </FIELDS>
@@ -110,6 +113,7 @@
         <INDEXES>
             <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid"/>
             <INDEX NAME="lrs" UNIQUE="false" FIELDS="lrs"/>
+            <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
         </INDEXES>
     </TABLE>
 

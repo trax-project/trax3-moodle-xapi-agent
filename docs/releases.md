@@ -1,5 +1,13 @@
 # Releases
 
+## 0.5
+
+- LRS client: statements queue.
+- Errors management: retry function.
+- New page: global xAPI status (production & test LRS).
+- New page: xAPI modeling errors (all courses).
+- Fine permissions tuning.
+
 ## 0.4
 
 - New data source: SCORM data from the SCORM course modules.

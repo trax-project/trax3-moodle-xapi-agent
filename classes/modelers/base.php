@@ -143,29 +143,29 @@ abstract class base {
 
         // Get the right template.
         if (!$template = $this->template()) {
-            return (object)['error' => self::ERROR_IGNORE, 'source' => $event, 'template' => null];
+            return (object)['error' => self::ERROR_IGNORE, 'source' => $event, 'optsource' => $optdata, 'template' => null];
         }
 
         // Open the template.
         if (!$content = $this->templateContents($template)) {
-            return (object)['error' => self::ERROR_TEMPLATE_FILE, 'source' => $event, 'template' => $template];
+            return (object)['error' => self::ERROR_TEMPLATE_FILE, 'source' => $event, 'optsource' => $optdata, 'template' => $template];
         }
 
         // Parse the JSON.
         if (!$json = json_decode($content, true)) {
-            return (object)['error' => self::ERROR_TEMPLATE_JSON, 'source' => $event, 'template' => $template];
+            return (object)['error' => self::ERROR_TEMPLATE_JSON, 'source' => $event, 'optsource' => $optdata, 'template' => $template];
         }
 
         // Fill placeholders.
         try {
             $statement = $this->fill_placeholders($json);
         } catch (ignore_event_exception $e) {
-            return (object)['error' => self::ERROR_IGNORE, 'source' => $event, 'template' => $template];
+            return (object)['error' => self::ERROR_IGNORE, 'source' => $event, 'optsource' => $optdata, 'template' => $template];
         } catch (\Exception $e) {
-            return (object)['error' => self::ERROR_PLACEHOLDER, 'source' => $event, 'template' => $template, 'exception' => $e];
+            return (object)['error' => self::ERROR_PLACEHOLDER, 'source' => $event, 'optsource' => $optdata, 'template' => $template, 'exception' => $e];
         }
 
-        return (object)['error' => self::ERROR_NO, 'source' => $event, 'template' => $template, 'statement' => $statement];
+        return (object)['error' => self::ERROR_NO, 'source' => $event, 'optsource' => $optdata, 'template' => $template, 'statement' => $statement];
     }
 
     /**

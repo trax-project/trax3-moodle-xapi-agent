@@ -83,17 +83,17 @@ $string['collect_scorm_data'] = 'Collect SCORM data';
 $string['scorm_from'] = 'SCORM attempts since';
 
 // Show events mode in course.
-$string['course_events_mode_0'] = 'Events are <b>not catched</b> in this course.';
-$string['course_events_mode_1'] = 'Events are catched in <b>real time</b>.';
-$string['course_events_mode_2'] = 'Events are collected from the <b>log store</b> since the {$a}.';
+$string['course_events_mode_0'] = 'Events from this course are <b>not catched</b> in this course.';
+$string['course_events_mode_1'] = 'Events from this course are catched in <b>real time</b>.';
+$string['course_events_mode_2'] = 'Events from this course are collected from the <b>log store</b> since the {$a}.';
 
 // Show scorm data collection in course.
-$string['course_scorm_enabled_0'] = 'SCORM data is <b>not collected</b> from this course.';
-$string['course_scorm_enabled_1'] = 'SCORM data is collected from the <b>SCORM activities</b> since the {$a}.';
+$string['course_scorm_enabled_0'] = 'SCORM data from this course is <b>not collected</b> from this course.';
+$string['course_scorm_enabled_1'] = 'SCORM data from this course is collected from the <b>SCORM activities</b> since the {$a}.';
 
 // Show client status in course.
 $string['client_status_0'] = 'There is <b>no statement</b> waiting to be sent to the LRS.';
-$string['client_status_n'] = 'There are <b>{$a} statements</b> waiting to be sent to the LRS.';
+$string['client_status_n'] = 'There are <b>{$a} statements</b> waiting to be sent to the LRS, all courses included.';
 
 $string['client_task_never_run'] = 'Statements will be sent for the first time during the next CRON job.';
 $string['client_task_last_run'] = 'Statements have been sent on the {$a} for the last time.';
@@ -162,7 +162,14 @@ $string['system_events_mode_help'] = '';
 $string['system_events_from'] = 'Logs recorded since';
 $string['system_events_from_help'] = 'Enter a date if you want to collect events from the log store.';
 
-// xAPI modeling.
+// LRS client.
+$string['lrs_client'] = 'LRS client';
+$string['lrs_client_help'] = 'In this section, you can define the behavior of the LRS client.';
+
+$string['lrs_batch_size'] = 'Batch size';
+$string['lrs_batch_size_help'] = 'Number of statements sent to the LRS for each request.';
+
+// Dev tools.
 $string['dev_tools'] = 'Development';
 $string['dev_tools_help'] = 'In this section, you can define a few options for developers.';
 
@@ -171,9 +178,8 @@ $string['custom_plugin_help'] = "The plugin must be a local plugin, located in t
 <a href='https://github.com/trax-project/trax3-moodle-xapi-agent/blob/master/docs/customization.md' target='_blank'>customization guidelines</a>.
 Please, enter its name without the 'local_' prefix.";
 
-// Dev tools.
 $string['all_dev_tools'] = 'Dev tools';
-$string['all_dev_tools_help'] = 'Currently, this consists in giving access to a test page from the xAPI block (site admin only).';
+$string['all_dev_tools_help'] = 'This consists in giving access to test functions in the status pages.';
 
 // Log store.
 $string['logs_status_never_run'] = 'Logs from this course will be scanned for the first time during the next CRON job.';
@@ -185,6 +191,45 @@ $string['scorm_status_never_run'] = 'SCORM data from this course will be scanned
 $string['scorm_status_last_run'] = 'SCORM data from this course has been scanned on the {$a} for the last time.';
 $string['scorm_status_replay'] = 'Rescan from the begining';
 
+// Pages.
+$string['xapi_status'] = 'xAPI status';
+$string['global_status'] = 'Global xAPI status (all courses)';
+$string['global_status_1'] = 'Production LRS status';
+$string['global_status_2'] = 'Test LRS status';
+
+// Actions.
+$string['test_scan_logs'] = '🧨Test: scan logs';
+$string['test_scan_scorm'] = '🧨Test: scan SCORM data';
+$string['test_flush_statements'] = '🧨Test: flush statements queue';
+$string['test_clear_statements'] = '🧨Test: clear statements queue';
+$string['retry'] = 'Retry';
+$string['forget'] = 'Forget';
+$string['delete_errors'] = 'Delete errors';
+
+// Nav.
+$string['more_details'] = 'More details';
+$string['back'] = 'Go back';
+$string['back_to_course'] = 'Back to course';
+$string['switch_production_lrs'] = 'Switch to Production LRS';
+$string['switch_test_lrs'] = 'Switch to Test LRS';
+
+// Terms.
+$string['course'] = 'Course';
+$string['moodle_events'] = 'Moodle events';
+$string['scorm_data'] = 'SCORM data';
+$string['lrs_client'] = 'LRS client';
+$string['courses'] = 'Courses';
+$string['title'] = 'Title';
+$string['link'] = 'Link';
+$string['disabled'] = 'Disabled';
+$string['live'] = 'Live';
+$string['logs_since'] = 'Logs since {$a}';
+$string['attempts_since'] = 'Attempts since {$a}';
+$string['timestamp'] = 'Date/Time';
+$string['type'] = 'Type';
+$string['event'] = 'Event';
+$string['template'] = 'Template';
+
 // Exceptions.
 $string['exception_template_context'] = 'TRAX xAPI Agent: we were not able to retrieve the context refered in a template.';
 $string['exception_entry_not_found'] = 'TRAX xAPI Agent: entry not found.';
@@ -193,22 +238,24 @@ $string['exception_entry_not_found'] = 'TRAX xAPI Agent: entry not found.';
 $string['errors_management'] = 'Errors management';
 $string['errors_management_help'] = '';
 
-$string['modeling_errors'] = 'xAPI modeling errors';
-$string['modeling_errors_notice'] = '{$a} error(s) occurred during xAPI data modeling for this course.';
-$string['modeling_errors_delete'] = 'Delete xAPI modeling errors';
+$string['no_error_notice'] = 'There is <b>no error</b> detected.';
+
+$string['event_modeling_errors'] = 'Moodle events modeling errors';
+$string['event_modeling_errors_notice'] = '<b>{$a} error(s)</b> occurred during xAPI modeling.';
+$string['event_modeling_errors_delete'] = 'Delete Moodle events modeling errors';
+
+$string['scorm_modeling_errors'] = 'SCORM modeling errors';
+$string['scorm_modeling_errors_notice'] = '<b>{$a} error(s)</b> occurred during xAPI modeling.';
+$string['scorm_modeling_errors_delete'] = 'Delete SCORM modeling errors';
+
 $string['client_errors'] = 'LRS communication errors';
-$string['client_errors_notice'] = '{$a} error(s) occurred during communication with the LRS.';
+$string['client_errors_notice'] = '<b>{$a} error(s)</b> occurred during communication with the LRS, all courses included.';
 $string['client_errors_delete'] = 'Delete LRS communication errors';
-$string['show_details'] = 'Show details';
 
-$string['error_code_2'] = 'Template file opening';
-$string['error_code_3'] = 'Template JSON parsing';
-$string['error_code_4'] = 'Placeholder generation';
-$string['error_code_http'] = 'HTTP client';
-
-$string['timestamp'] = 'Date/Time';
-$string['type'] = 'Type';
-$string['event'] = 'Event';
+$string['modeling_error_code_2'] = 'Modeler class not found';
+$string['modeling_error_code_3'] = 'Template file opening';
+$string['modeling_error_code_4'] = 'Template JSON parsing';
+$string['modeling_error_code_5'] = 'Placeholder generation';
 
 // Tasks.
 $string['task_scan_log_store'] = 'Scan the log store to create xAPI statements';
