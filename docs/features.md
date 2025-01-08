@@ -23,7 +23,7 @@ where errors are listed and some features are provided, such as:
 - **[Forget]** the errors, which means doing nothing and removing the errors
 - **[Retry]**, which means retrying to create the failed statements or sending the unsent statements
 
-## Reseting courses analysis
+## Resetting courses analysis
 
 When statements have already been sent from a course, their is always a possibility to resend them thanks to the **[Rescan from the begining]**
 located in the course xAPI status page.
