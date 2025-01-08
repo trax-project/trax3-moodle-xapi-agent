@@ -25,7 +25,6 @@
 use block_trax_xapi\config;
 use block_trax_xapi\client;
 use block_trax_xapi\errors;
-use block_trax_xapi\converter;
 
 require('../../../config.php');
 require_once($CFG->libdir . '/tablelib.php');
@@ -60,24 +59,28 @@ echo $OUTPUT->header();
 
 // ------------------------------ LINKS -----------------------------
 
+$systemurl = new moodle_url('/blocks/trax_xapi/views/system_status.php');
+
 if ($lrs == config::LRS_TEST) {
-    $url = new moodle_url('/blocks/trax_xapi/views/global_status.php', [
+    $globalurl = new moodle_url('/blocks/trax_xapi/views/global_status.php', [
         'lrs' => config::LRS_PRODUCTION,
     ]);
 
     echo("
         <div class='mb-5'>
-            <a class='btn btn-primary' href='$url'>" . get_string('switch_production_lrs', 'block_trax_xapi') . "</a>
+            <a class='btn btn-secondary' href='$systemurl'>" . get_string('system_status', 'block_trax_xapi') . "</a>
+            <a class='btn btn-primary' href='$globalurl'>" . get_string('switch_production_lrs', 'block_trax_xapi') . "</a>
         </div>
     ");
 } else {
-    $url = new moodle_url('/blocks/trax_xapi/views/global_status.php', [
+    $globalurl = new moodle_url('/blocks/trax_xapi/views/global_status.php', [
         'lrs' => config::LRS_TEST,
     ]);
 
     echo("
         <div class='mb-5'>
-            <a class='btn btn-primary' href='$url'>" . get_string('switch_test_lrs', 'block_trax_xapi') . "</a>
+            <a class='btn btn-secondary' href='$systemurl'>" . get_string('system_status', 'block_trax_xapi') . "</a>
+            <a class='btn btn-primary' href='$globalurl'>" . get_string('switch_test_lrs', 'block_trax_xapi') . "</a>
         </div>
     ");
 }
@@ -294,25 +297,27 @@ $table->print_html();
 // ------------------------------ LINKS -----------------------------
 
 if ($lrs == config::LRS_TEST) {
-    $url = new moodle_url('/blocks/trax_xapi/views/global_status.php', [
+    $globalurl = new moodle_url('/blocks/trax_xapi/views/global_status.php', [
         'lrs' => config::LRS_PRODUCTION,
     ]);
 
     echo("
         <hr class='mt-4'>
         <div class='mt-4'>
-            <a class='btn btn-primary' href='$url'>" . get_string('switch_production_lrs', 'block_trax_xapi') . "</a>
+            <a class='btn btn-secondary' href='$systemurl'>" . get_string('system_status', 'block_trax_xapi') . "</a>
+            <a class='btn btn-primary' href='$globalurl'>" . get_string('switch_production_lrs', 'block_trax_xapi') . "</a>
         </div>
     ");
 } else {
-    $url = new moodle_url('/blocks/trax_xapi/views/global_status.php', [
+    $globalurl = new moodle_url('/blocks/trax_xapi/views/global_status.php', [
         'lrs' => config::LRS_TEST,
     ]);
 
     echo("
         <hr class='mt-4'>
         <div class='mt-4'>
-            <a class='btn btn-primary' href='$url'>" . get_string('switch_test_lrs', 'block_trax_xapi') . "</a>
+            <a class='btn btn-secondary' href='$systemurl'>" . get_string('system_status', 'block_trax_xapi') . "</a>
+            <a class='btn btn-primary' href='$globalurl'>" . get_string('switch_test_lrs', 'block_trax_xapi') . "</a>
         </div>
     ");
 }

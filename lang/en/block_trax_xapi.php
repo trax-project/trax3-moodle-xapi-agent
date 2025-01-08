@@ -193,6 +193,7 @@ $string['scorm_status_replay'] = 'Rescan from the begining';
 
 // Pages.
 $string['xapi_status'] = 'xAPI status';
+$string['system_status'] = 'xAPI status for system level events';
 $string['global_status'] = 'Global xAPI status (all courses)';
 $string['global_status_1'] = 'Production LRS status';
 $string['global_status_2'] = 'Test LRS status';
@@ -249,7 +250,7 @@ $string['scorm_modeling_errors_notice'] = '<b>{$a} error(s)</b> occurred during 
 $string['scorm_modeling_errors_delete'] = 'Delete SCORM modeling errors';
 
 $string['client_errors'] = 'LRS communication errors';
-$string['client_errors_notice'] = '<b>{$a} error(s)</b> occurred during communication with the LRS, all courses included.';
+$string['client_errors_notice'] = '<b>{$a} error(s)</b> occurred during communication with the LRS.';
 $string['client_errors_delete'] = 'Delete LRS communication errors';
 
 $string['modeling_error_code_2'] = 'Modeler class not found';
