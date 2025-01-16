@@ -27,6 +27,7 @@ namespace block_trax_xapi\repositories;
 defined('MOODLE_INTERNAL') || die();
 
 use block_trax_xapi\config;
+use block_trax_xapi\utils;
 use core_user;
 
 require_once($CFG->dirroot.'/user/profile/lib.php');
